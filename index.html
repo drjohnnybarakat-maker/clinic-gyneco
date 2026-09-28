@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GyneCare">
+<title>GyneCare Pro</title>
+<style>
+:root {
+  --rose:#c8796a;--rose-dark:#a85e51;--rose-light:#fdf0ee;
+  --navy:#1a2744;--teal:#3d8b8b;--teal-light:#e8f4f4;
+  --cream:#faf8f5;--white:#ffffff;
+  --g100:#f4f2ef;--g200:#e8e5e0;--g300:#ccc8c2;
+  --g400:#999490;--g600:#5a5650;--g800:#2d2b28;
+  --safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',Arial,sans-serif;background:var(--cream);color:var(--g800);font-size:15px}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;padding:40px}
+.spl-logo{text-align:center;margin-bottom:48px}
+.spl-logo h1{color:white;font-size:44px;font-weight:300;letter-spacing:3px}
+.spl-logo h1 span{color:var(--rose)}
+.spl-logo p{color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+.spl-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;padding:18px;border-radius:16px;display:flex;align-items:center;gap:14px;font-size:17px;font-weight:500;cursor:pointer;width:100%;text-align:left;margin-bottom:12px}
+.spl-btn:active{background:rgba(255,255,255,0.2)}
+.spl-btn .ico{font-size:28px}
+.spl-btn .sub{font-size:11px;opacity:0.5;display:block;margin-top:2px}
+
+/* APP */
+#app{display:none;height:100%;flex-direction:column}
+#app.show{display:flex}
+
+/* TOPBAR */
+.topbar{background:var(--navy);color:white;padding:12px 16px;padding-top:calc(12px + var(--safe-top));display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:100}
+.back-btn{background:rgba(255,255,255,0.15);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.back-btn:active{background:rgba(255,255,255,0.3)}
+.topbar-title{font-size:17px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:7px 14px;border-radius:20px;font-size:13px;cursor:pointer;white-space:nowrap}
+.topbar-btn.rose{background:var(--rose)}
+.topbar-btn:active{opacity:0.7}
+
+/* BOTTOM NAV */
+.bottomnav{background:var(--white);border-top:1px solid var(--g200);display:flex;padding-bottom:var(--safe-bottom);flex-shrink:0}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px;border:none;background:none;cursor:pointer;color:var(--g400);font-size:10px;gap:3px}
+.bnav-item.active{color:var(--rose)}
+.bnav-item .bico{font-size:22px}
+
+/* SCROLL */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* PAGES */
+.page{display:none;padding:16px;min-height:100%}
+.page.active{display:block}
+
+/* CARDS */
+.page-title{font-size:26px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.page-sub{color:var(--g400);font-size:13px;margin-bottom:18px}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.stat-card{background:var(--white);border-radius:14px;padding:16px;border:1px solid var(--g200)}
+.stat-ico{font-size:22px;margin-bottom:6px}
+.stat-num{font-size:28px;font-weight:700;color:var(--navy)}
+.stat-lbl{font-size:11px;color:var(--g400);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+.sec-card{background:var(--white);border-radius:14px;border:1px solid var(--g200);margin-bottom:16px;overflow:hidden}
+.sec-card-hdr{padding:14px 16px;border-bottom:1px solid var(--g100)}
+.sec-card-hdr h3{font-size:16px;font-weight:600;color:var(--navy)}
+.sec-card-body{padding:14px 16px}
+
+/* PATIENT LIST */
+.pt-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--g100);cursor:pointer;background:white}
+.pt-item:active{background:var(--rose-light)}
+.pt-avatar{width:46px;height:46px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+.pt-info{flex:1;min-width:0}
+.pt-name{font-size:15px;font-weight:600;color:var(--g800)}
+.pt-detail{font-size:12px;color:var(--g400);margin-top:2px}
+.pt-badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;white-space:nowrap}
+.badge-gyn{background:#e8f1ff;color:#2d5aa8}
+.badge-ob{background:#e8f5ee;color:#3a7d5e}
+.chevron{color:var(--g300);font-size:20px}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:14px}
+.search-wrap input{width:100%;padding:12px 16px 12px 42px;border:1.5px solid var(--g200);border-radius:12px;font-size:16px;background:var(--white);-webkit-appearance:none;outline:none}
+.search-wrap input:focus{border-color:var(--rose)}
+.search-ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--g400)}
+
+/* FORMS */
+.form-card{background:var(--white);border-radius:14px;border:1px solid var(--g200);margin-bottom:16px;overflow:hidden}
+.fsec-title{font-size:12px;font-weight:700;color:var(--rose-dark);text-transform:uppercase;letter-spacing:0.5px;padding:11px 16px;background:var(--rose-light);border-bottom:1px solid var(--g200)}
+.form-field{padding:12px 16px;border-bottom:1px solid var(--g100)}
+.form-field:last-child{border-bottom:none}
+.form-field label{display:block;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:16px;color:var(--g800);background:var(--white);-webkit-appearance:none;outline:none;font-family:inherit}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--rose)}
+.form-field textarea{min-height:80px;resize:none}
+.calc-field{background:var(--teal-light)!important;border-color:var(--teal)!important;color:var(--teal)!important;font-weight:700!important}
+.ro-field{background:var(--g100)!important;color:var(--g600)!important}
+.check-field{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--g100)}
+.check-field input[type=checkbox]{width:22px;height:22px;flex-shrink:0;accent-color:var(--rose)}
+.check-field label{font-size:15px;color:var(--g800)}
+
+/* TABS */
+.tabs-scroll{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--white);border-bottom:2px solid var(--g200);margin-bottom:16px;padding:0 4px;scrollbar-width:none;position:sticky;top:0;z-index:10}
+.tabs-scroll::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;padding:12px 14px;border:none;background:none;font-size:13px;font-weight:600;color:var(--g400);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-2px}
+.tab-btn.active{color:var(--rose);border-bottom-color:var(--rose)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* BUTTONS */
+.btn{padding:14px 20px;border-radius:12px;border:none;font-size:16px;font-weight:600;cursor:pointer;width:100%;margin-bottom:10px;-webkit-appearance:none;font-family:inherit}
+.btn:active{opacity:0.8}
+.btn-primary{background:var(--rose);color:white}
+.btn-secondary{background:var(--navy);color:white}
+.btn-teal{background:var(--teal);color:white}
+.btn-outline{background:white;border:1.5px solid var(--g300);color:var(--g600)}
+.btn-danger{background:#b83c3c;color:white}
+.btn-green{background:#3a7d5e;color:white}
+.btn-row{display:flex;gap:10px}
+.btn-row .btn{margin-bottom:0}
+.save-bar{position:sticky;bottom:0;background:white;padding:12px 0 4px;border-top:1px solid var(--g200);margin-top:8px}
+
+/* PREGNANCY CARD */
+.preg-card{background:linear-gradient(135deg,#1a2744,#243358);border-radius:14px;padding:18px;margin-bottom:14px;color:white;cursor:pointer;position:relative;overflow:hidden}
+.preg-card:active{opacity:0.9}
+.preg-card .preg-title{font-size:13px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.preg-card .preg-ga{font-size:24px;font-weight:700;margin-bottom:4px}
+.preg-card .preg-edd{font-size:13px;opacity:0.7}
+.preg-card .preg-badge{position:absolute;top:16px;right:16px;background:var(--rose);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.preg-card .preg-num{position:absolute;bottom:14px;right:16px;font-size:11px;opacity:0.4}
+.new-preg-btn{border:2px dashed rgba(255,255,255,0.3);background:rgba(255,255,255,0.05);border-radius:14px;padding:18px;text-align:center;cursor:pointer;color:white;font-size:15px;font-weight:600;margin-bottom:14px}
+.new-preg-btn:active{background:rgba(255,255,255,0.1)}
+
+/* APPTS */
+.appt-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--g100)}
+.appt-time{font-size:15px;font-weight:700;color:var(--navy);width:50px;flex-shrink:0}
+.appt-info{flex:1}
+.appt-name{font-size:15px;font-weight:600}
+.appt-type{font-size:12px;color:var(--g400);margin-top:2px}
+
+/* SHEET */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none}
+.sheet-overlay.show{display:block}
+.sheet{position:fixed;bottom:0;left:0;right:0;background:white;border-radius:20px 20px 0 0;z-index:201;max-height:90vh;overflow-y:auto;padding-bottom:calc(20px + var(--safe-bottom));transform:translateY(100%);transition:transform 0.3s ease}
+.sheet.show{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:var(--g300);border-radius:2px;margin:12px auto 16px}
+.sheet-title{font-size:18px;font-weight:700;color:var(--navy);padding:0 16px 16px}
+.sheet-body{padding:0 16px 20px}
+.sheet-field{margin-bottom:12px}
+.sheet-field label{display:block;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;margin-bottom:5px}
+.sheet-field input,.sheet-field select,.sheet-field textarea{width:100%;padding:10px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:16px;background:white;-webkit-appearance:none;outline:none;font-family:inherit}
+.sheet-field input:focus,.sheet-field select:focus{border-color:var(--rose)}
+
+/* UPLOAD */
+.upload-zone{border:2px dashed var(--g300);border-radius:12px;padding:22px;text-align:center;cursor:pointer;background:var(--g100);margin:10px 0}
+.upload-zone:active{border-color:var(--teal);background:var(--teal-light)}
+.upload-ico{font-size:28px;margin-bottom:6px}
+.upload-txt{font-size:13px;color:var(--g400)}
+.img-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.img-thumb{width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover;border:2px solid var(--g200)}
+
+/* ALERT */
+.alert{padding:12px 14px;border-radius:10px;font-size:13px;margin-bottom:14px;line-height:1.6}
+.alert-info{background:var(--teal-light);color:var(--teal);border-left:3px solid var(--teal)}
+.alert-warn{background:#fff4e8;color:#8a5a1a;border-left:3px solid #c9832a}
+
+/* FU */
+.fu-card{background:var(--white);border-radius:14px;border:1px solid var(--g200);margin-bottom:14px;overflow:hidden}
+.fu-card-hdr{padding:12px 16px;background:var(--navy);color:white;display:flex;align-items:center;justify-content:space-between}
+.fu-remove-btn{background:rgba(255,255,255,0.2);border:none;color:white;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer}
+
+/* TOAST */
+#toast{position:fixed;bottom:90px;left:16px;right:16px;background:var(--navy);color:white;padding:14px 20px;border-radius:12px;font-size:14px;text-align:center;z-index:9999;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+
+.hidden{display:none!important}
+hr{border:none;border-top:1px solid var(--g200);margin:4px 0}
+
+/* ===== OCR STYLES ===== */
+.ocr-btn{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#1a2744,#3d8b8b);color:white;border:none;border-radius:12px;padding:14px 18px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-bottom:12px;font-family:inherit}
+.ocr-btn:active{opacity:0.85}
+.ocr-btn .ocr-ico{font-size:24px;flex-shrink:0}
+.ocr-btn .ocr-txt{flex:1;text-align:left}
+.ocr-btn .ocr-sub{font-size:11px;opacity:0.65;display:block;margin-top:2px;font-weight:400}
+.ocr-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;display:none;flex-direction:column}
+.ocr-overlay.show{display:flex}
+.ocr-header{background:var(--navy);padding:16px;padding-top:calc(16px + env(safe-area-inset-top));display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ocr-header-title{font-size:17px;font-weight:700;color:white;flex:1}
+.ocr-close-btn{background:rgba(255,255,255,0.15);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ocr-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px}
+.ocr-photo-area{border:2px dashed rgba(255,255,255,0.3);border-radius:16px;padding:32px 20px;text-align:center;cursor:pointer;margin-bottom:16px;background:rgba(255,255,255,0.04)}
+.ocr-photo-area:active{background:rgba(255,255,255,0.1)}
+.ocr-photo-area .ico{font-size:48px;margin-bottom:10px}
+.ocr-photo-area p{color:rgba(255,255,255,0.7);font-size:15px;font-weight:600}
+.ocr-photo-area small{color:rgba(255,255,255,0.4);font-size:12px;margin-top:4px;display:block}
+.ocr-preview{width:100%;border-radius:12px;margin-bottom:14px;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+.ocr-status{background:rgba(255,255,255,0.06);border-radius:12px;padding:16px;margin-bottom:14px;display:none}
+.ocr-status-title{color:white;font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.ocr-status-body{color:rgba(255,255,255,0.65);font-size:13px;line-height:1.6}
+.ocr-results{background:rgba(255,255,255,0.06);border-radius:12px;padding:16px;margin-bottom:14px;display:none}
+.ocr-results-title{color:white;font-size:14px;font-weight:700;margin-bottom:12px}
+.ocr-field-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px}
+.ocr-field-label{font-size:12px;color:rgba(255,255,255,0.5);width:140px;flex-shrink:0;line-height:1.3}
+.ocr-field-val{flex:1;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:7px 10px;color:white;font-size:14px;font-family:inherit;min-width:0}
+.ocr-field-val:focus{border-color:var(--rose);outline:none}
+.ocr-field-found{border-color:var(--teal)!important;background:rgba(61,139,139,0.2)!important}
+.ocr-photo-saved{background:rgba(61,139,139,0.15);border:1px solid var(--teal);border-radius:10px;padding:12px;margin-bottom:12px;display:none;color:rgba(255,255,255,0.8);font-size:13px}
+.ocr-footer{background:var(--navy);padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));display:flex;gap:10px;flex-shrink:0}
+.ocr-footer .btn{margin-bottom:0;flex:1}
+.ocr-spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ocr-type-bar{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
+.ocr-type-bar::-webkit-scrollbar{display:none}
+.ocr-type-btn{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit}
+.ocr-type-btn.active{background:var(--rose);border-color:var(--rose);color:white}
+.photos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.photo-thumb{width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover;border:2px solid rgba(255,255,255,0.2);cursor:pointer}
+.photo-thumb:active{opacity:0.7}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="spl-logo">
+    <h1>Gyne<span>Care</span> Pro</h1>
+    <p>Unified Patient Management</p>
+  </div>
+  <button class="spl-btn" onclick="launch('all')">
+    <span class="ico">🏥</span>
+    <span><span style="display:block;font-size:17px;font-weight:600">Full Clinic</span><span class="sub">All patients — GYN + OB</span></span>
+    <span style="margin-left:auto">›</span>
+  </button>
+  <button class="spl-btn" onclick="launch('gyn')">
+    <span class="ico">🩺</span>
+    <span><span style="display:block;font-size:17px;font-weight:600">Gynecology Only</span><span class="sub">GYN files</span></span>
+    <span style="margin-left:auto">›</span>
+  </button>
+  <button class="spl-btn" onclick="launch('ob')">
+    <span class="ico">🤰</span>
+    <span><span style="display:block;font-size:17px;font-weight:600">Obstetrics Only</span><span class="sub">Pregnancy files</span></span>
+    <span style="margin-left:auto">›</span>
+  </button>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar" id="topbar">
+    <button class="back-btn hidden" id="back-btn" onclick="goBack()">‹</button>
+    <div class="topbar-title" id="topbar-title">GyneCare Pro</div>
+    <button class="topbar-btn" id="topbar-action" style="display:none"></button>
+  </div>
+
+  <div class="scroll" id="scroll-area">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub" id="dash-date"></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-ico">👩</div><div class="stat-num" id="s-total">0</div><div class="stat-lbl">Patients</div></div>
+        <div class="stat-card"><div class="stat-ico">🤰</div><div class="stat-num" id="s-ob">0</div><div class="stat-lbl">Pregnancies</div></div>
+        <div class="stat-card"><div class="stat-ico">📅</div><div class="stat-num" id="s-today">0</div><div class="stat-lbl">Today</div></div>
+        <div class="stat-card"><div class="stat-ico">🩺</div><div class="stat-num" id="s-gyn">0</div><div class="stat-lbl">GYN Only</div></div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-hdr"><h3>Today's Appointments</h3></div>
+        <div id="dash-appts"><div style="padding:16px;color:var(--g400);font-size:14px">No appointments today.</div></div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-hdr"><h3>Recent Patients</h3></div>
+        <div id="dash-recent"><div style="padding:16px;color:var(--g400);font-size:14px">No recent files.</div></div>
+      </div>
+    </div>
+
+    <!-- PATIENTS LIST -->
+    <div class="page" id="page-patients">
+      <div class="search-wrap">
+        <span class="search-ico">🔍</span>
+        <input type="search" id="pt-search" placeholder="Search name, file number, condition..." oninput="renderPatients()">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <select id="pt-filter" onchange="renderPatients()" style="flex:1;padding:10px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:14px;background:white;-webkit-appearance:none">
+          <option value="all">All Patients</option>
+          <option value="pregnant">Currently Pregnant</option>
+          <option value="gyn">GYN Only</option>
+        </select>
+        <button class="topbar-btn rose" style="padding:10px 18px;border-radius:10px;font-size:15px" onclick="newPatient()">+ New</button>
+      </div>
+      <div id="patient-list"></div>
+    </div>
+
+    <!-- APPOINTMENTS -->
+    <div class="page" id="page-appointments">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <div class="page-title">Appointments</div>
+          <input type="date" id="appt-dp" onchange="loadAppts()" style="margin-top:8px;padding:8px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:14px;background:white;-webkit-appearance:none">
+        </div>
+        <button class="topbar-btn rose" style="padding:12px 16px;border-radius:10px;font-size:14px;margin-top:8px" onclick="showSheet('appt')">+ Add</button>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-hdr"><h3>Appointments This Day</h3></div>
+        <div id="appt-list-body"><div style="padding:16px;color:var(--g400);font-size:14px">No appointments.</div></div>
+      </div>
+      <div class="sec-card" style="margin-top:16px">
+        <div class="sec-card-hdr"><h3>Upcoming 7 Days</h3></div>
+        <div id="appt-upcoming"><div style="padding:16px;color:var(--g400);font-size:14px">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- SYNC -->
+    <div class="page" id="page-sync">
+      <div class="page-title">Sync & Settings</div>
+      <div class="page-sub">Transfer data between iPhone and Laptop</div>
+      <div class="sec-card">
+        <div class="sec-card-hdr"><h3>📤 Export to Laptop</h3></div>
+        <div class="sec-card-body">
+          <p style="font-size:14px;color:var(--g600);line-height:1.6;margin-bottom:14px">Export all data as JSON. AirDrop or email it to your laptop then import there.</p>
+          <button class="btn btn-secondary" onclick="exportData()">Export All Data (JSON)</button>
+        </div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-hdr"><h3>📥 Import from Laptop</h3></div>
+        <div class="sec-card-body">
+          <p style="font-size:14px;color:var(--g600);line-height:1.6;margin-bottom:14px">Select a JSON backup file exported from your laptop GyneCare app.</p>
+          <button class="btn btn-teal" onclick="document.getElementById('import-file').click()">Import Backup File</button>
+          <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
+        </div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-hdr"><h3>⚙️ Clinic Settings</h3></div>
+        <div class="sec-card-body">
+          <div class="sheet-field"><label>Doctor Name</label><input id="set-doctor" placeholder="Dr. ..."></div>
+          <div class="sheet-field"><label>Clinic Name</label><input id="set-clinic"></div>
+          <div class="sheet-field"><label>Phone</label><input id="set-phone" type="tel"></div>
+          <div style="margin-top:14px"><button class="btn btn-primary" onclick="saveSettings()">Save Settings</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PATIENT FILE (MASTER) ===== -->
+    <div class="page" id="page-patient-file">
+      <input type="hidden" id="pt-id">
+
+      <!-- Patient header card -->
+      <div style="background:var(--navy);border-radius:16px;padding:20px;margin-bottom:16px;color:white">
+        <div style="font-size:22px;font-weight:700" id="pt-header-name">New Patient</div>
+        <div style="font-size:13px;opacity:0.6;margin-top:4px" id="pt-header-sub"></div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button class="topbar-btn" onclick="savePatient()">💾 Save</button>
+          <button class="topbar-btn rose" onclick="addPregnancy()" id="add-preg-btn">🤰 Add Pregnancy</button>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tabs-scroll">
+        <button class="tab-btn active" onclick="switchTab('pt','info',this)">👤 Info</button>
+        <button class="tab-btn" onclick="switchTab('pt','history',this)">📋 History</button>
+        <button class="tab-btn" onclick="switchTab('pt','gyn',this)">🩺 GYN Exam</button>
+        <button class="tab-btn" onclick="switchTab('pt','gyn-us',this)">📡 GYN US</button>
+        <button class="tab-btn" onclick="switchTab('pt','labs',this)">🩸 Lab Tests</button>
+        <button class="tab-btn" onclick="switchTab('pt','pregnancies',this)">🤰 Pregnancies</button>
+        <button class="tab-btn" onclick="switchTab('pt','gyn-fu',this)">📆 GYN Visits</button>
+      </div>
+
+      <!-- TAB: PERSONAL INFO -->
+      <div class="tab-panel active" id="pt-tab-info">
+        <div class="form-card">
+          <div class="fsec-title">Personal Information</div>
+          <div class="form-field"><label>File Number</label><input id="pt-filenum" class="ro-field" readonly></div>
+          <div class="form-field"><label>Last Name</label><input id="pt-lastname" autocomplete="off"></div>
+          <div class="form-field"><label>First Name</label><input id="pt-firstname" autocomplete="off"></div>
+          <div class="form-field"><label>Date of Birth</label><input type="date" id="pt-dob" onchange="calcAge()"></div>
+          <div class="form-field"><label>Age</label><input id="pt-age" class="ro-field" readonly></div>
+          <div class="form-field"><label>Blood Group</label>
+            <select id="pt-bloodgroup"><option value="">Select...</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
+          </div>
+          <div class="form-field"><label>Address</label><input id="pt-address"></div>
+          <div class="form-field"><label>Phone</label><input type="tel" id="pt-phone"></div>
+          <div class="form-field"><label>Email</label><input type="email" id="pt-email"></div>
+          <div class="form-field"><label>Emergency Contact</label><input id="pt-emergency"></div>
+          <div class="form-field"><label>Occupation</label><input id="pt-occupation"></div>
+          <div class="form-field"><label>Marital Status</label>
+            <select id="pt-marital"><option value="">Select...</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select>
+          </div>
+          <div class="form-field"><label>Menopausal Status</label>
+            <select id="pt-menopause"><option>Pre-menopausal</option><option>Peri-menopausal</option><option>Post-menopausal</option></select>
+          </div>
+          <div class="form-field"><label>Notes</label><textarea id="pt-notes"></textarea></div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePatient()">💾 Save Patient File</button></div>
+      </div>
+
+      <!-- TAB: MEDICAL HISTORY -->
+      <div class="tab-panel" id="pt-tab-history">
+        <div class="form-card">
+          <div class="fsec-title">Menstrual History</div>
+          <div class="form-field"><label>Menarche (age)</label><input type="number" id="pt-menarche"></div>
+          <div class="form-field"><label>Cycle Duration (days)</label><input type="number" id="pt-cycle" value="28"></div>
+          <div class="form-field"><label>Menstrual Duration (days)</label><input type="number" id="pt-mensdur" value="5"></div>
+          <div class="form-field"><label>Flow</label><select id="pt-flow"><option>Normal</option><option>Light</option><option>Heavy</option><option>Very Heavy</option></select></div>
+          <div class="form-field"><label>LMP</label><input type="date" id="pt-lmp"></div>
+          <div class="form-field"><label>Dysmenorrhea</label><select id="pt-dysmenorrhea"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></div>
+          <div class="form-field"><label>Intermenstrual Bleeding</label><select id="pt-imb"><option>No</option><option>Yes</option></select></div>
+          <div class="form-field"><label>Postcoital Bleeding</label><select id="pt-pcb"><option>No</option><option>Yes</option></select></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Obstetric Summary</div>
+          <div class="form-field"><label>Gravida (total pregnancies)</label><input type="number" id="pt-gravida" min="0"></div>
+          <div class="form-field"><label>Para (deliveries)</label><input type="number" id="pt-para" min="0"></div>
+          <div class="form-field"><label>Abortus</label><input type="number" id="pt-abortus" min="0"></div>
+          <div class="form-field"><label>Living Children</label><input type="number" id="pt-living" min="0"></div>
+          <div class="form-field"><label>Previous Pregnancies Detail</label><textarea id="pt-prev-preg" placeholder="Year - Type SVD/CS/Abortion - GA - Birth weight - Complications"></textarea></div>
+          <div class="form-field"><label>Contraception History</label><textarea id="pt-contraception"></textarea></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Family History</div>
+          <div class="form-field"><label>Diabetes</label><select id="pt-fam-diabetes"><option value="">Unknown</option><option>None</option><option>Mother</option><option>Father</option><option>Both</option></select></div>
+          <div class="form-field"><label>Hypertension</label><select id="pt-fam-htn"><option value="">Unknown</option><option>None</option><option>Mother</option><option>Father</option><option>Both</option></select></div>
+          <div class="form-field"><label>Cancer</label><select id="pt-fam-cancer"><option value="">Unknown</option><option>None</option><option>Breast</option><option>Ovarian</option><option>Cervical</option><option>Colorectal</option><option>Other</option></select></div>
+          <div class="form-field"><label>Cardiac Disease</label><select id="pt-fam-cardiac"><option value="">Unknown</option><option>None</option><option>Mother</option><option>Father</option></select></div>
+          <div class="form-field"><label>Other Family History</label><textarea id="pt-fam-other"></textarea></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Lifestyle and Allergies</div>
+          <div class="form-field"><label>Tobacco</label><select id="pt-tobacco"><option>None</option><option>Former smoker</option><option>1-10 per day</option><option>10-20 per day</option><option>More than 20 per day</option></select></div>
+          <div class="form-field"><label>Alcohol</label><select id="pt-alcohol"><option>None</option><option>Occasional</option><option>Moderate</option><option>Daily</option></select></div>
+          <div class="form-field"><label>Drug Allergies</label><input id="pt-allergy-drug" placeholder="e.g. Penicillin"></div>
+          <div class="form-field"><label>Food Allergies</label><input id="pt-allergy-food"></div>
+          <div class="form-field"><label>Other Allergies</label><input id="pt-allergy-other"></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Personal Medical History</div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-diabetes"><label for="pt-hx-diabetes">Diabetes Mellitus</label></div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-htn"><label for="pt-hx-htn">Hypertension</label></div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-thyroid"><label for="pt-hx-thyroid">Thyroid Disease</label></div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-cardiac"><label for="pt-hx-cardiac">Cardiac Disease</label></div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-renal"><label for="pt-hx-renal">Renal Disease</label></div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-epilepsy"><label for="pt-hx-epilepsy">Epilepsy</label></div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-asthma"><label for="pt-hx-asthma">Asthma</label></div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-pcos"><label for="pt-hx-pcos">PCOS</label></div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-endo"><label for="pt-hx-endo">Endometriosis</label></div>
+          <div class="check-field"><input type="checkbox" id="pt-hx-fibroids"><label for="pt-hx-fibroids">Uterine Fibroids</label></div>
+          <div class="form-field"><label>Details and Other Conditions</label><textarea id="pt-hx-detail"></textarea></div>
+          <div class="form-field"><label>Surgical History</label><textarea id="pt-surgical"></textarea></div>
+          <div class="form-field"><label>Current Medications</label><textarea id="pt-medications"></textarea></div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePatient()">💾 Save</button></div>
+      </div>
+
+      <!-- TAB: GYN EXAM -->
+      <div class="tab-panel" id="pt-tab-gyn">
+        <div class="form-card">
+          <div class="fsec-title">General Examination</div>
+          <div class="form-field"><label>Exam Date</label><input type="date" id="pt-exam-date"></div>
+          <div class="form-field"><label>Weight (kg)</label><input type="number" id="pt-weight" step="0.1" oninput="calcBMI()"></div>
+          <div class="form-field"><label>Height (cm)</label><input type="number" id="pt-height" oninput="calcBMI()"></div>
+          <div class="form-field"><label>BMI</label><input id="pt-bmi" class="calc-field" readonly></div>
+          <div class="form-field"><label>Blood Pressure (mmHg)</label><input id="pt-bp" placeholder="120/80"></div>
+          <div class="form-field"><label>Pulse (bpm)</label><input type="number" id="pt-pulse"></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Gynecologic Examination</div>
+          <div class="form-field"><label>Abdomen</label><textarea id="pt-abdomen"></textarea></div>
+          <div class="form-field"><label>Vulva</label><textarea id="pt-vulva"></textarea></div>
+          <div class="form-field"><label>Vagina</label><textarea id="pt-vagina"></textarea></div>
+          <div class="form-field"><label>Cervix (Speculum)</label><textarea id="pt-cervix"></textarea></div>
+          <div class="form-field"><label>Uterus (Bimanual)</label><textarea id="pt-uterus"></textarea></div>
+          <div class="form-field"><label>Adnexa</label><textarea id="pt-adnexa"></textarea></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Pap Smear</div>
+          <div class="form-field"><label>Date</label><input type="date" id="pt-pap-date"></div>
+          <div class="form-field"><label>Result</label>
+            <select id="pt-pap-result"><option value="">Select...</option><option>Negative (Normal)</option><option>ASC-US</option><option>ASC-H</option><option>LSIL</option><option>HSIL</option><option>AGC</option><option>Unsatisfactory</option></select>
+          </div>
+          <div class="form-field"><label>HPV Test</label>
+            <select id="pt-hpv"><option value="">Not done</option><option>Negative</option><option>HPV 16+</option><option>HPV 18+</option><option>Other HR-HPV</option></select>
+          </div>
+          <div class="form-field"><label>Follow-up Plan</label><textarea id="pt-pap-notes"></textarea></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Breast Examination</div>
+          <div class="form-field"><textarea id="pt-breast" placeholder="Inspection, palpation, nipple discharge..."></textarea></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Diagnosis and Management Plan</div>
+          <div class="form-field"><label>Diagnosis</label><textarea id="pt-diagnosis"></textarea></div>
+          <div class="form-field"><label>Management Plan</label><textarea id="pt-plan"></textarea></div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePatient()">💾 Save</button></div>
+      </div>
+
+      <!-- TAB: GYN ULTRASOUND -->
+      <div class="tab-panel" id="pt-tab-gyn-us">
+        <button class="ocr-btn" onclick="openOCR('gyn-us')">
+          <span class="ocr-ico">📸</span>
+          <span class="ocr-txt">Scan Ultrasound Report with Camera<span class="ocr-sub">Photo of printed US report — AI fills measurements automatically</span></span>
+        </button>
+        <div class="form-card">
+          <div class="fsec-title">Gynecologic Ultrasound</div>
+          <div class="form-field"><label>Date</label><input type="date" id="pt-us-date"></div>
+          <div class="form-field"><label>Route</label><select id="pt-us-route"><option>Transabdominal</option><option>Transvaginal</option><option>Both</option></select></div>
+          <div class="form-field"><label>Indication</label><input id="pt-us-indication"></div>
+          <div class="form-field"><label>Uterus Position</label><select id="pt-ut-pos"><option>Anteverted</option><option>Retroverted</option><option>Axial</option></select></div>
+          <div class="form-field"><label>Uterus Size (L x W x AP cm)</label><input id="pt-ut-size" placeholder="e.g. 7.5 x 4.2 x 5.1"></div>
+          <div class="form-field"><label>Endometrial Thickness (mm)</label><input type="number" id="pt-endo-thick" step="0.1"></div>
+          <div class="form-field"><label>Myometrium</label><select id="pt-myo"><option>Homogeneous</option><option>Heterogeneous</option><option>Fibroid(s)</option><option>Adenomyosis</option></select></div>
+          <div class="form-field"><label>Uterine Findings</label><textarea id="pt-ut-findings"></textarea></div>
+          <div class="form-field"><label>Right Ovary Size (cm)</label><input id="pt-rov-size" placeholder="L x W x AP"></div>
+          <div class="form-field"><label>Right Ovary Findings</label><input id="pt-rov-find"></div>
+          <div class="form-field"><label>Left Ovary Size (cm)</label><input id="pt-lov-size" placeholder="L x W x AP"></div>
+          <div class="form-field"><label>Left Ovary Findings</label><input id="pt-lov-find"></div>
+          <div class="form-field"><label>Free Fluid (POD)</label><input id="pt-free-fluid" placeholder="None / minimal / moderate"></div>
+          <div class="form-field"><label>Doppler</label><textarea id="pt-doppler"></textarea></div>
+          <div class="form-field"><label>Conclusion</label><textarea id="pt-us-conclusion"></textarea></div>
+          <div class="form-field">
+            <div class="upload-zone" onclick="document.getElementById('pt-us-file').click()">
+              <div class="upload-ico">📡</div>
+              <div class="upload-txt">Tap to add GYN ultrasound images from Vinno</div>
+            </div>
+            <input type="file" id="pt-us-file" multiple accept="image/*" style="display:none" onchange="addImgs(this,'pt-us-imgs')">
+            <div class="img-grid" id="pt-us-imgs"></div>
+          </div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePatient()">💾 Save</button></div>
+      </div>
+
+      <!-- TAB: LAB TESTS -->
+      <div class="tab-panel" id="pt-tab-labs">
+        <button class="ocr-btn" onclick="openOCR('gyn-labs')">
+          <span class="ocr-ico">📸</span>
+          <span class="ocr-txt">Scan Lab Report with Camera<span class="ocr-sub">Take a photo — AI reads and fills all results automatically</span></span>
+        </button>
+        <div class="form-card">
+          <div class="fsec-title">Hormonal Profile</div>
+          <div class="form-field"><label>Date</label><input type="date" id="pt-lab-date"></div>
+          <div class="form-field"><label>FSH (mIU/mL)</label><input type="number" id="pt-fsh" step="0.1"></div>
+          <div class="form-field"><label>LH (mIU/mL)</label><input type="number" id="pt-lh" step="0.1"></div>
+          <div class="form-field"><label>Estradiol (pg/mL)</label><input type="number" id="pt-e2" step="0.1"></div>
+          <div class="form-field"><label>Progesterone (ng/mL)</label><input type="number" id="pt-prog" step="0.1"></div>
+          <div class="form-field"><label>Prolactin (ng/mL)</label><input type="number" id="pt-prl" step="0.1"></div>
+          <div class="form-field"><label>TSH (mIU/L)</label><input type="number" id="pt-tsh" step="0.01"></div>
+          <div class="form-field"><label>AMH (ng/mL)</label><input type="number" id="pt-amh" step="0.01"></div>
+          <div class="form-field"><label>Testosterone (ng/dL)</label><input type="number" id="pt-testo" step="0.1"></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Tumor Markers</div>
+          <div class="form-field"><label>CA-125 (U/mL)</label><input type="number" id="pt-ca125" step="0.1"></div>
+          <div class="form-field"><label>HE4 (pmol/L)</label><input type="number" id="pt-he4" step="0.1"></div>
+          <div class="form-field"><label>CA 19-9 (U/mL)</label><input type="number" id="pt-ca199" step="0.1"></div>
+          <div class="form-field"><label>AFP (ng/mL)</label><input type="number" id="pt-afp" step="0.1"></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">General Lab Tests</div>
+          <div class="form-field"><label>Hb (g/dL)</label><input type="number" id="pt-hb" step="0.1"></div>
+          <div class="form-field"><label>Fasting Glucose (mg/dL)</label><input type="number" id="pt-glucose"></div>
+          <div class="form-field"><label>Cholesterol (mg/dL)</label><input type="number" id="pt-chol"></div>
+          <div class="form-field"><label>HbA1c (%)</label><input type="number" id="pt-hba1c" step="0.1"></div>
+          <div class="form-field"><label>Additional Results</label><textarea id="pt-lab-extra"></textarea></div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePatient()">💾 Save</button></div>
+      </div>
+
+      <!-- TAB: PREGNANCIES LIST -->
+      <div class="tab-panel" id="pt-tab-pregnancies">
+        <div class="alert alert-info">Each pregnancy is a separate follow-up file linked to this patient. All personal info and history are shared automatically.</div>
+        <div id="pregnancies-list"></div>
+        <button class="btn btn-green" onclick="addPregnancy()">🤰 Open New Pregnancy File</button>
+      </div>
+
+      <!-- TAB: GYN FOLLOW-UP VISITS -->
+      <div class="tab-panel" id="pt-tab-gyn-fu">
+        <button class="btn btn-primary" style="margin-bottom:16px" onclick="addFU('gyn')">+ Add GYN Visit</button>
+        <div id="gyn-fu-list"></div>
+        <div class="save-bar"><button class="btn btn-outline" onclick="savePatient()">💾 Save</button></div>
+      </div>
+
+    </div><!-- end patient-file -->
+
+    <!-- ===== PREGNANCY FILE ===== -->
+    <div class="page" id="page-preg-file">
+      <input type="hidden" id="preg-id">
+      <input type="hidden" id="preg-patient-id">
+
+      <!-- Pregnancy header -->
+      <div style="background:linear-gradient(135deg,#1a2744,#243358);border-radius:16px;padding:18px;margin-bottom:16px;color:white">
+        <div style="font-size:13px;opacity:0.5;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Obstetrics File</div>
+        <div style="font-size:20px;font-weight:700" id="preg-header-name"></div>
+        <div style="font-size:13px;opacity:0.6;margin-top:3px" id="preg-header-ga"></div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button class="topbar-btn" onclick="savePregnancy()">💾 Save</button>
+          <button class="topbar-btn" style="background:rgba(255,255,255,0.1)" onclick="goBackToPatient()">← Back to Patient</button>
+        </div>
+      </div>
+
+      <div class="tabs-scroll">
+        <button class="tab-btn active" onclick="switchTab('preg','ob',this)">🤰 OB Data</button>
+        <button class="tab-btn" onclick="switchTab('preg','blood',this)">🩸 Blood Tests</button>
+        <button class="tab-btn" onclick="switchTab('preg','us1',this)">📡 T1 Scan</button>
+        <button class="tab-btn" onclick="switchTab('preg','us2',this)">📡 T2 Scan</button>
+        <button class="tab-btn" onclick="switchTab('preg','us3',this)">📡 T3 Scan</button>
+        <button class="tab-btn" onclick="switchTab('preg','exam',this)">🔬 OB Exam</button>
+        <button class="tab-btn" onclick="switchTab('preg','followup',this)">📆 Visits</button>
+      </div>
+
+      <!-- OB DATA -->
+      <div class="tab-panel active" id="preg-tab-ob">
+        <div class="alert alert-info">Patient personal info and medical history are automatically linked from the main patient file.</div>
+        <div class="form-card">
+          <div class="fsec-title">This Pregnancy</div>
+          <div class="form-field"><label>Pregnancy Number</label><input id="preg-num" class="ro-field" readonly></div>
+          <div class="form-field"><label>Gravida (at this pregnancy)</label><input type="number" id="preg-gravida" min="1"></div>
+          <div class="form-field"><label>Para (before this pregnancy)</label><input type="number" id="preg-para" min="0"></div>
+          <div class="form-field"><label>Cycle Duration (days)</label><input type="number" id="preg-cycle" value="28"></div>
+          <div class="form-field"><label>Last Menstrual Period (LMP)</label><input type="date" id="preg-lmp" onchange="calcOB()"></div>
+          <div class="form-field"><label>Gestational Age — Auto Calculated</label><input id="preg-ga" class="calc-field" readonly placeholder="Enter LMP above"></div>
+          <div class="form-field"><label>Estimated Due Date — Auto Calculated</label><input id="preg-edd" class="calc-field" readonly></div>
+          <div class="form-field"><label>Trimester</label><input id="preg-trimester" class="calc-field" readonly></div>
+          <div class="form-field"><label>Conception Method</label>
+            <select id="preg-conception"><option>Spontaneous</option><option>IVF</option><option>IUI</option><option>ICSI</option><option>Other ART</option></select>
+          </div>
+          <div class="form-field"><label>Chorionicity (if multiple)</label>
+            <select id="preg-chorion"><option>Singleton</option><option>DCDA Twins</option><option>MCDA Twins</option><option>MCMA Twins</option><option>Triplets</option></select>
+          </div>
+          <div class="form-field"><label>Pregnancy Notes</label><textarea id="preg-notes" placeholder="Special considerations, risk factors for this pregnancy..."></textarea></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Delivery Outcome</div>
+          <div class="form-field"><label>Delivery Date</label><input type="date" id="preg-delivery-date"></div>
+          <div class="form-field"><label>Delivery Mode</label>
+            <select id="preg-delivery-mode"><option value="">Pending</option><option>SVD (Normal)</option><option>Instrumental (Forceps/Vacuum)</option><option>Elective CS</option><option>Emergency CS</option><option>Abortion</option><option>IUFD</option></select>
+          </div>
+          <div class="form-field"><label>GA at Delivery (weeks)</label><input type="number" id="preg-delivery-ga" step="0.1"></div>
+          <div class="form-field"><label>Birth Weight (g)</label><input type="number" id="preg-birth-weight"></div>
+          <div class="form-field"><label>Apgar 1 min</label><input type="number" id="preg-apgar1" min="0" max="10"></div>
+          <div class="form-field"><label>Apgar 5 min</label><input type="number" id="preg-apgar5" min="0" max="10"></div>
+          <div class="form-field"><label>Complications</label><textarea id="preg-delivery-comp" placeholder="PPH, perineal tears, NICU admission..."></textarea></div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePregnancy()">💾 Save Pregnancy File</button></div>
+      </div>
+
+      <!-- BLOOD TESTS -->
+      <div class="tab-panel" id="preg-tab-blood">
+        <button class="ocr-btn" onclick="openOCR('ob-blood')">
+          <span class="ocr-ico">📸</span>
+          <span class="ocr-txt">Scan Blood Test Report with Camera<span class="ocr-sub">Photo of any lab result — AI reads and fills all values automatically</span></span>
+        </button>
+        <div class="form-card">
+          <div class="fsec-title">First Trimester Blood Tests</div>
+          <div class="form-field"><label>Date</label><input type="date" id="preg-bt1-date"></div>
+          <div class="form-field"><label>Blood Group and Rh</label><input id="preg-bt-bg"></div>
+          <div class="form-field"><label>Hb (g/dL)</label><input type="number" id="preg-hb" step="0.1"></div>
+          <div class="form-field"><label>Platelets (/µL)</label><input type="number" id="preg-plt"></div>
+          <div class="form-field"><label>WBC (/µL)</label><input type="number" id="preg-wbc"></div>
+          <div class="form-field"><label>Toxoplasmosis IgG</label><select id="preg-toxo-igg"><option value="">-</option><option>Negative</option><option>Positive</option></select></div>
+          <div class="form-field"><label>Toxoplasmosis IgM</label><select id="preg-toxo-igm"><option value="">-</option><option>Negative</option><option>Positive</option></select></div>
+          <div class="form-field"><label>Rubella IgG</label><select id="preg-rubella-igg"><option value="">-</option><option>Negative</option><option>Positive (immune)</option></select></div>
+          <div class="form-field"><label>Rubella IgM</label><select id="preg-rubella-igm"><option value="">-</option><option>Negative</option><option>Positive</option></select></div>
+          <div class="form-field"><label>CMV IgG</label><select id="preg-cmv-igg"><option value="">-</option><option>Negative</option><option>Positive</option></select></div>
+          <div class="form-field"><label>CMV IgM</label><select id="preg-cmv-igm"><option value="">-</option><option>Negative</option><option>Positive</option></select></div>
+          <div class="form-field"><label>HIV</label><select id="preg-hiv"><option value="">-</option><option>Non-reactive</option><option>Reactive</option></select></div>
+          <div class="form-field"><label>VDRL (Syphilis)</label><select id="preg-vdrl"><option value="">-</option><option>Non-reactive</option><option>Reactive</option></select></div>
+          <div class="form-field"><label>HBs Ag (Hepatitis B)</label><select id="preg-hbs"><option value="">-</option><option>Negative</option><option>Positive</option></select></div>
+          <div class="form-field"><label>HCV Ab</label><select id="preg-hcv"><option value="">-</option><option>Negative</option><option>Positive</option></select></div>
+          <div class="form-field"><label>TSH (mIU/L)</label><input type="number" id="preg-tsh" step="0.01"></div>
+          <div class="form-field"><label>Fasting Glucose (mg/dL)</label><input type="number" id="preg-glucose"></div>
+          <div class="form-field"><label>Urine Proteins</label><select id="preg-urine-prot"><option value="">-</option><option>Negative</option><option>Trace</option><option>1+</option><option>2+</option><option>3+</option></select></div>
+          <div class="form-field"><label>Urine Culture</label><input id="preg-urine-cx"></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Second Trimester Tests</div>
+          <div class="form-field"><label>Date</label><input type="date" id="preg-bt2-date"></div>
+          <div class="form-field"><label>OGTT 1h (mg/dL)</label><input type="number" id="preg-ogtt1"></div>
+          <div class="form-field"><label>OGTT 2h (mg/dL)</label><input type="number" id="preg-ogtt2"></div>
+          <div class="form-field"><label>Hb (g/dL)</label><input type="number" id="preg-hb2" step="0.1"></div>
+          <div class="form-field"><label>Ferritin (ng/mL)</label><input type="number" id="preg-ferritin"></div>
+          <div class="form-field"><label>Additional Tests</label><textarea id="preg-bt2-extra"></textarea></div>
+        </div>
+        <div class="form-card">
+          <div class="fsec-title">Third Trimester Tests</div>
+          <div class="form-field"><label>Date</label><input type="date" id="preg-bt3-date"></div>
+          <div class="form-field"><label>Hb (g/dL)</label><input type="number" id="preg-hb3" step="0.1"></div>
+          <div class="form-field"><label>GBS (Group B Strep)</label><select id="preg-gbs"><option value="">Not done</option><option>Negative</option><option>Positive</option></select></div>
+          <div class="form-field"><label>INR</label><input type="number" id="preg-inr" step="0.01"></div>
+          <div class="form-field"><label>Additional Tests</label><textarea id="preg-bt3-extra"></textarea></div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePregnancy()">💾 Save</button></div>
+      </div>
+
+      <!-- T1 SCAN -->
+      <div class="tab-panel" id="preg-tab-us1">
+        <button class="ocr-btn" onclick="openOCR('ob-us1')">
+          <span class="ocr-ico">📸</span>
+          <span class="ocr-txt">Scan T1 Ultrasound Report<span class="ocr-sub">Photo of printed Vinno report — AI fills CRL, NT, FHR automatically</span></span>
+        </button>
+        <div class="form-card">
+          <div class="fsec-title">First Trimester Ultrasound (11-14 weeks)</div>
+          <div class="form-field"><label>Date</label><input type="date" id="preg-us1-date"></div>
+          <div class="form-field"><label>GA at Scan</label><input id="preg-us1-ga" placeholder="e.g. 12w3d"></div>
+          <div class="form-field"><label>CRL (mm)</label><input type="number" id="preg-crl" step="0.1"></div>
+          <div class="form-field"><label>NT (mm)</label><input type="number" id="preg-nt" step="0.1"></div>
+          <div class="form-field"><label>Nasal Bone</label><select id="preg-nb"><option value="">-</option><option>Present</option><option>Absent</option></select></div>
+          <div class="form-field"><label>FHR (bpm)</label><input type="number" id="preg-fhr1"></div>
+          <div class="form-field"><label>Findings</label><textarea id="preg-us1-findings" placeholder="Uterus, adnexa, fetal anatomy assessment..."></textarea></div>
+          <div class="form-field">
+            <div class="upload-zone" onclick="document.getElementById('preg-us1-file').click()">
+              <div class="upload-ico">📡</div>
+              <div class="upload-txt">Tap to add first trimester ultrasound images</div>
+            </div>
+            <input type="file" id="preg-us1-file" multiple accept="image/*" style="display:none" onchange="addImgs(this,'preg-us1-imgs')">
+            <div class="img-grid" id="preg-us1-imgs"></div>
+          </div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePregnancy()">💾 Save</button></div>
+      </div>
+
+      <!-- T2 SCAN -->
+      <div class="tab-panel" id="preg-tab-us2">
+        <button class="ocr-btn" onclick="openOCR('ob-us2')">
+          <span class="ocr-ico">📸</span>
+          <span class="ocr-txt">Scan T2 Anatomy Scan Report<span class="ocr-sub">Photo of printed report — AI fills BPD, HC, AC, FL, EFW, placenta automatically</span></span>
+        </button>
+        <div class="form-card">
+          <div class="fsec-title">Second Trimester Anatomy Scan (18-22 weeks)</div>
+          <div class="form-field"><label>Date</label><input type="date" id="preg-us2-date"></div>
+          <div class="form-field"><label>GA at Scan</label><input id="preg-us2-ga"></div>
+          <div class="form-field"><label>BPD (mm)</label><input type="number" id="preg-bpd" step="0.1"></div>
+          <div class="form-field"><label>HC (mm)</label><input type="number" id="preg-hc" step="0.1"></div>
+          <div class="form-field"><label>AC (mm)</label><input type="number" id="preg-ac" step="0.1"></div>
+          <div class="form-field"><label>FL (mm)</label><input type="number" id="preg-fl" step="0.1"></div>
+          <div class="form-field"><label>EFW (g)</label><input type="number" id="preg-efw"></div>
+          <div class="form-field"><label>Placenta Location</label><select id="preg-placenta"><option value="">Select...</option><option>Anterior</option><option>Posterior</option><option>Fundal</option><option>Lateral</option><option>Low-lying</option><option>Previa</option></select></div>
+          <div class="form-field"><label>AFI (cm)</label><input type="number" id="preg-afi" step="0.1"></div>
+          <div class="form-field"><label>FHR (bpm)</label><input type="number" id="preg-fhr2"></div>
+          <div class="form-field"><label>Cervical Length (mm)</label><input type="number" id="preg-cx-length" step="0.1"></div>
+          <div class="form-field"><label>Fetal Anatomy</label><textarea id="preg-anatomy" placeholder="Head, face, spine, heart 4ch, LVOT, RVOT, lungs, abdomen, kidneys, limbs, gender..."></textarea></div>
+          <div class="form-field"><label>Doppler Findings</label><textarea id="preg-doppler" placeholder="Umbilical artery PI, MCA, uterine arteries..."></textarea></div>
+          <div class="form-field">
+            <div class="upload-zone" onclick="document.getElementById('preg-us2-file').click()">
+              <div class="upload-ico">📡</div>
+              <div class="upload-txt">Tap to add anatomy scan images</div>
+            </div>
+            <input type="file" id="preg-us2-file" multiple accept="image/*" style="display:none" onchange="addImgs(this,'preg-us2-imgs')">
+            <div class="img-grid" id="preg-us2-imgs"></div>
+          </div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePregnancy()">💾 Save</button></div>
+      </div>
+
+      <!-- T3 SCAN -->
+      <div class="tab-panel" id="preg-tab-us3">
+        <button class="ocr-btn" onclick="openOCR('ob-us3')">
+          <span class="ocr-ico">📸</span>
+          <span class="ocr-txt">Scan T3 Growth Scan Report<span class="ocr-sub">Photo of printed report — AI fills biometry, EFW, AFI, presentation automatically</span></span>
+        </button>
+        <div class="form-card">
+          <div class="fsec-title">Third Trimester Growth Scan (28-36 weeks)</div>
+          <div class="form-field"><label>Date</label><input type="date" id="preg-us3-date"></div>
+          <div class="form-field"><label>GA at Scan</label><input id="preg-us3-ga"></div>
+          <div class="form-field"><label>BPD (mm)</label><input type="number" id="preg-bpd3" step="0.1"></div>
+          <div class="form-field"><label>HC (mm)</label><input type="number" id="preg-hc3" step="0.1"></div>
+          <div class="form-field"><label>AC (mm)</label><input type="number" id="preg-ac3" step="0.1"></div>
+          <div class="form-field"><label>FL (mm)</label><input type="number" id="preg-fl3" step="0.1"></div>
+          <div class="form-field"><label>EFW (g)</label><input type="number" id="preg-efw3"></div>
+          <div class="form-field"><label>AFI (cm)</label><input type="number" id="preg-afi3" step="0.1"></div>
+          <div class="form-field"><label>Placenta Grade</label><select id="preg-placenta-grade"><option value="">-</option><option>Grade 0</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option></select></div>
+          <div class="form-field"><label>Fetal Presentation</label><select id="preg-presentation"><option>Cephalic</option><option>Breech</option><option>Transverse</option><option>Oblique</option></select></div>
+          <div class="form-field"><label>Growth Scan Findings</label><textarea id="preg-us3-findings"></textarea></div>
+          <div class="form-field"><label>Doppler</label><textarea id="preg-doppler3"></textarea></div>
+          <div class="form-field">
+            <div class="upload-zone" onclick="document.getElementById('preg-us3-file').click()">
+              <div class="upload-ico">📡</div>
+              <div class="upload-txt">Tap to add third trimester scan images</div>
+            </div>
+            <input type="file" id="preg-us3-file" multiple accept="image/*" style="display:none" onchange="addImgs(this,'preg-us3-imgs')">
+            <div class="img-grid" id="preg-us3-imgs"></div>
+          </div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePregnancy()">💾 Save</button></div>
+      </div>
+
+      <!-- OB EXAM -->
+      <div class="tab-panel" id="preg-tab-exam">
+        <div class="form-card">
+          <div class="fsec-title">Obstetric Physical Examination</div>
+          <div class="form-field"><label>Date</label><input type="date" id="preg-exam-date"></div>
+          <div class="form-field"><label>Weight (kg)</label><input type="number" id="preg-weight" step="0.1"></div>
+          <div class="form-field"><label>BP (mmHg)</label><input id="preg-bp" placeholder="120/80"></div>
+          <div class="form-field"><label>Pulse (bpm)</label><input type="number" id="preg-pulse"></div>
+          <div class="form-field"><label>Fundal Height (cm)</label><input type="number" id="preg-fh"></div>
+          <div class="form-field"><label>Fetal Presentation</label><select id="preg-pres-exam"><option>Cephalic</option><option>Breech</option><option>Transverse</option><option>Not palpable yet</option></select></div>
+          <div class="form-field"><label>Fetal Movements</label><select id="preg-fm"><option>Present</option><option>Reduced</option><option>Absent</option><option>Not felt yet</option></select></div>
+          <div class="form-field"><label>Edema</label><select id="preg-edema"><option>None</option><option>Feet only</option><option>Feet and ankles</option><option>Generalized</option></select></div>
+          <div class="form-field"><label>Cervix (if indicated)</label><textarea id="preg-cx-exam" placeholder="Effacement, dilation, station, consistency..."></textarea></div>
+          <div class="form-field"><label>Vaginal Discharge</label><textarea id="preg-discharge"></textarea></div>
+          <div class="form-field"><label>Pap Smear (if done)</label><select id="preg-pap"><option value="">Not done</option><option>Negative (Normal)</option><option>ASC-US</option><option>LSIL</option><option>Other</option></select></div>
+        </div>
+        <div class="save-bar"><button class="btn btn-primary" onclick="savePregnancy()">💾 Save</button></div>
+      </div>
+
+      <!-- OB FOLLOW-UP VISITS -->
+      <div class="tab-panel" id="preg-tab-followup">
+        <button class="btn btn-primary" style="margin-bottom:16px" onclick="addFU('preg')">+ Add Monthly Visit</button>
+        <div id="preg-fu-list"></div>
+        <div class="save-bar"><button class="btn btn-outline" onclick="savePregnancy()">💾 Save</button></div>
+      </div>
+
+    </div><!-- end preg-file -->
+
+  </div><!-- end scroll -->
+
+  <!-- BOTTOM NAV -->
+  <div class="bottomnav" id="bottomnav">
+    <button class="bnav-item active" id="bnav-home" onclick="bnav('dashboard',this)"><span class="bico">🏠</span>Home</button>
+    <button class="bnav-item" id="bnav-patients" onclick="bnav('patients',this)"><span class="bico">👥</span>Patients</button>
+    <button class="bnav-item" id="bnav-appointments" onclick="bnav('appointments',this)"><span class="bico">📅</span>Appts</button>
+    <button class="bnav-item" id="bnav-sync" onclick="bnav('sync',this)"><span class="bico">🔄</span>Sync</button>
+  </div>
+</div>
+
+<!-- ===== OCR OVERLAY ===== -->
+<div class="ocr-overlay" id="ocr-overlay">
+  <div class="ocr-header">
+    <button class="ocr-close-btn" onclick="closeOCR()">✕</button>
+    <div class="ocr-header-title" id="ocr-title">Scan Lab Report</div>
+  </div>
+
+  <div class="ocr-body">
+
+    <!-- Type selector -->
+    <div class="ocr-type-bar" id="ocr-type-bar">
+      <button class="ocr-type-btn active" data-type="auto" onclick="setOCRType('auto',this)">🤖 Auto-Detect</button>
+      <button class="ocr-type-btn" data-type="blood" onclick="setOCRType('blood',this)">🩸 Blood Tests</button>
+      <button class="ocr-type-btn" data-type="hormones" onclick="setOCRType('hormones',this)">🔬 Hormones</button>
+      <button class="ocr-type-btn" data-type="us-gyn" onclick="setOCRType('us-gyn',this)">📡 GYN US</button>
+      <button class="ocr-type-btn" data-type="us-ob" onclick="setOCRType('us-ob',this)">🤰 OB US</button>
+      <button class="ocr-type-btn" data-type="markers" onclick="setOCRType('markers',this)">🧬 Tumor Markers</button>
+    </div>
+
+    <!-- Photo area -->
+    <div class="ocr-photo-area" id="ocr-photo-area" onclick="document.getElementById('ocr-file-input').click()">
+      <div class="ocr-ico">📷</div>
+      <p>Take a Photo or Choose from Gallery</p>
+      <small>Works with printed lab results, radiology reports, ultrasound printouts</small>
+    </div>
+    <input type="file" id="ocr-file-input" accept="image/*" capture="environment" style="display:none" onchange="handleOCRPhoto(this)">
+
+    <!-- Preview -->
+    <img id="ocr-preview" class="ocr-preview">
+
+    <!-- Photo saved notice -->
+    <div class="ocr-photo-saved" id="ocr-photo-saved">
+      ✅ Photo saved to patient file — you can view it in the document photos section
+    </div>
+
+    <!-- Status -->
+    <div class="ocr-status" id="ocr-status">
+      <div class="ocr-status-title">
+        <span id="ocr-status-icon">⏳</span>
+        <span id="ocr-status-text">Reading your document...</span>
+      </div>
+      <div class="ocr-status-body" id="ocr-status-body">Claude AI is analysing the image and extracting all test values. This takes about 5-10 seconds.</div>
+    </div>
+
+    <!-- Results for review -->
+    <div class="ocr-results" id="ocr-results">
+      <div class="ocr-results-title">✏️ Review and Correct Before Importing</div>
+      <div id="ocr-fields-list"></div>
+    </div>
+
+    <!-- Saved photos in file -->
+    <div id="ocr-saved-photos-section" style="display:none">
+      <div style="color:rgba(255,255,255,0.7);font-size:14px;font-weight:600;margin-bottom:10px">📁 Document Photos in Patient File</div>
+      <div class="photos-grid" id="ocr-saved-photos-grid"></div>
+    </div>
+
+  </div>
+
+  <div class="ocr-footer">
+    <button class="btn btn-outline" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2);color:white" onclick="closeOCR()">Cancel</button>
+    <button class="btn btn-primary" id="ocr-import-btn" onclick="importOCRResults()" style="display:none">✅ Import All Results</button>
+  </div>
+</div>
+
+<!-- SHEETS -->
+<div class="sheet-overlay" id="appt-overlay" onclick="closeSheet('appt')">
+  <div class="sheet" id="appt-sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">New Appointment</div>
+    <div class="sheet-body">
+      <div class="sheet-field"><label>Last Name</label><input id="m-lastname"></div>
+      <div class="sheet-field"><label>First Name</label><input id="m-firstname"></div>
+      <div class="sheet-field"><label>Date</label><input type="date" id="m-date"></div>
+      <div class="sheet-field"><label>Time</label><input type="time" id="m-time" value="09:00"></div>
+      <div class="sheet-field"><label>Type</label>
+        <select id="m-type">
+          <option>GYN Consultation</option><option>GYN Follow-up</option>
+          <option>OB First Visit</option><option>OB Follow-up</option>
+          <option>Pap Smear</option><option>Ultrasound</option>
+          <option>Colposcopy</option><option>Other</option>
+        </select>
+      </div>
+      <div class="sheet-field"><label>Phone</label><input type="tel" id="m-phone"></div>
+      <div style="margin-top:16px" class="btn-row">
+        <button class="btn btn-outline" onclick="closeSheet('appt')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveAppt()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var appMode='all',pageHistory=[],fuCount=0,currentPatientId=null,currentPregId=null;
+
+function dbGet(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):[]}catch(e){return[]}}
+function dbSet(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function dbGetObj(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):{}}catch(e){return{}}}
+
+// ===== LAUNCH =====
+function launch(mode){
+  appMode=mode;
+  document.getElementById('splash').style.display='none';
+  document.getElementById('app').classList.add('show');
+  var now=new Date();
+  document.getElementById('dash-date').textContent=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('appt-dp').value=now.toISOString().substr(0,10);
+  updateDashboard();loadAppts();loadSettings();renderPatients();
+}
+
+// ===== NAVIGATION =====
+function bnav(page,btn){
+  document.querySelectorAll('.bnav-item').forEach(function(b){b.classList.remove('active')});
+  if(btn)btn.classList.add('active');
+  showPage(page);
+  var titles={dashboard:'GyneCare Pro',patients:'Patients',appointments:'Appointments',sync:'Sync & Settings'};
+  document.getElementById('topbar-title').textContent=titles[page]||'GyneCare Pro';
+  document.getElementById('back-btn').classList.add('hidden');
+  document.getElementById('bottomnav').style.display='flex';
+  pageHistory=[];
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  var pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('active');
+  document.getElementById('scroll-area').scrollTop=0;
+}
+
+function navigateTo(pageId,title){
+  var cur=document.querySelector('.page.active');
+  if(cur)pageHistory.push(cur.id.replace('page-',''));
+  document.getElementById('back-btn').classList.remove('hidden');
+  document.getElementById('bottomnav').style.display='none';
+  document.getElementById('topbar-title').textContent=title||pageId;
+  showPage(pageId);
+}
+
+function goBack(){
+  if(pageHistory.length>0){
+    var prev=pageHistory.pop();
+    showPage(prev);
+    if(pageHistory.length===0){
+      document.getElementById('back-btn').classList.add('hidden');
+      document.getElementById('bottomnav').style.display='flex';
+      var titles={dashboard:'GyneCare Pro',patients:'Patients',appointments:'Appointments',sync:'Sync & Settings','patient-file':'Patient File','preg-file':'Pregnancy File'};
+      document.getElementById('topbar-title').textContent=titles[prev]||prev;
+    } else {
+      var titles2={'patient-file':'Patient File','preg-file':'Pregnancy File'};
+      document.getElementById('topbar-title').textContent=titles2[prev]||prev;
+    }
+  }
+}
+
+function goBackToPatient(){
+  // Save pregnancy first then go back
+  savePregnancy();
+  pageHistory=[];
+  loadPatientFile(currentPatientId);
+  // switch to pregnancies tab
+  setTimeout(function(){switchTabById('pt','pregnancies');},100);
+}
+
+// ===== TABS =====
+function switchTab(prefix,tab,btn){
+  var form=document.getElementById('page-'+prefix+'-file');
+  if(!form)return;
+  form.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+  form.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  var p=document.getElementById(prefix+'-tab-'+tab);
+  if(p)p.classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('scroll-area').scrollTop=0;
+}
+
+function switchTabById(prefix,tab){
+  var form=document.getElementById('page-'+prefix+'-file');
+  if(!form)return;
+  form.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+  form.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  var p=document.getElementById(prefix+'-tab-'+tab);
+  if(p)p.classList.add('active');
+  var btns=form.querySelectorAll('.tab-btn');
+  btns.forEach(function(b){if(b.getAttribute('onclick')&&b.getAttribute('onclick').indexOf("'"+tab+"'")>=0)b.classList.add('active');});
+}
+
+// ===== SHEETS =====
+function showSheet(n){document.getElementById(n+'-overlay').classList.add('show');document.getElementById(n+'-sheet').classList.add('show')}
+function closeSheet(n){document.getElementById(n+'-overlay').classList.remove('show');document.getElementById(n+'-sheet').classList.remove('show')}
+
+// ===== CALCULATIONS =====
+function calcAge(){
+  var dob=document.getElementById('pt-dob').value;
+  if(!dob)return;
+  document.getElementById('pt-age').value=Math.floor((new Date()-new Date(dob))/(365.25*24*60*60*1000))+' years';
+}
+function calcBMI(){
+  var w=parseFloat(document.getElementById('pt-weight').value);
+  var h=parseFloat(document.getElementById('pt-height').value)/100;
+  if(w&&h)document.getElementById('pt-bmi').value=(w/(h*h)).toFixed(1);
+}
+function calcOB(){
+  var lmp=document.getElementById('preg-lmp').value;
+  if(!lmp)return;
+  var d=Math.floor((new Date()-new Date(lmp))/(1000*60*60*24));
+  var w=Math.floor(d/7),days=d%7;
+  document.getElementById('preg-ga').value=w+' weeks + '+days+' days';
+  var edd=new Date(new Date(lmp).getTime()+280*24*60*60*1000);
+  document.getElementById('preg-edd').value=edd.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('preg-trimester').value=w<14?'1st Trimester':w<28?'2nd Trimester':'3rd Trimester';
+  document.getElementById('preg-header-ga').textContent='GA: '+(w+' weeks + '+days+' days')+' | EDD: '+document.getElementById('preg-edd').value;
+}
+
+// ===== FILE NUMBER =====
+function genFileNum(){
+  var list=dbGet('patients');
+  var yr=new Date().getFullYear().toString().substr(2);
+  return 'PT-'+yr+'-'+('0000'+(list.length+1)).slice(-4);
+}
+
+// ===== NEW PATIENT =====
+function newPatient(){
+  currentPatientId=null;
+  resetPatientForm();
+  document.getElementById('pt-filenum').value=genFileNum();
+  navigateTo('patient-file','New Patient');
+}
+
+function resetPatientForm(){
+  var form=document.getElementById('page-patient-file');
+  form.querySelectorAll('input').forEach(function(el){if(el.type==='checkbox')el.checked=false;else el.value='';});
+  form.querySelectorAll('select').forEach(function(el){el.selectedIndex=0;});
+  form.querySelectorAll('textarea').forEach(function(el){el.value='';});
+  document.getElementById('pt-id').value='';
+  var imgs=document.getElementById('pt-us-imgs');
+  if(imgs)imgs.innerHTML='';
+  var fuList=document.getElementById('gyn-fu-list');
+  if(fuList)fuList.innerHTML='';
+  document.getElementById('pt-header-name').textContent='New Patient';
+  document.getElementById('pt-header-sub').textContent='';
+  // reset tabs
+  switchTabById('pt','info');
+}
+
+// ===== COLLECT PATIENT DATA =====
+function collectPatientData(){
+  var data={_updated:new Date().toISOString()};
+  var form=document.getElementById('page-patient-file');
+  form.querySelectorAll('input[id],select[id],textarea[id]').forEach(function(el){
+    if(el.id==='pt-id')return;
+    if(el.type==='checkbox')data[el.id]=el.checked;
+    else data[el.id]=el.value;
+  });
+  var imgs=document.getElementById('pt-us-imgs');
+  if(imgs)data['pt-us-imgs']=Array.from(imgs.querySelectorAll('img')).map(function(i){return i.src;});
+  return data;
+}
+
+// ===== SAVE PATIENT =====
+function savePatient(){
+  var ln=document.getElementById('pt-lastname').value;
+  if(!ln){alert('Please enter patient last name.');return;}
+  var data=collectPatientData();
+  var list=dbGet('patients');
+  var eid=document.getElementById('pt-id').value;
+  if(eid){
+    currentPatientId=eid;
+    for(var i=0;i<list.length;i++){if(list[i]['pt-id']===eid){data['pt-id']=eid;list[i]=data;break;}}
+  } else {
+    data['pt-id']=''+Date.now();
+    document.getElementById('pt-id').value=data['pt-id'];
+    currentPatientId=data['pt-id'];
+    list.push(data);
+  }
+  dbSet('patients',list);
+  var fn=document.getElementById('pt-firstname').value||'';
+  document.getElementById('pt-header-name').textContent=ln+' '+fn;
+  document.getElementById('pt-header-sub').textContent=(document.getElementById('pt-filenum').value||'')+(document.getElementById('pt-dob').value?' • DOB: '+new Date(document.getElementById('pt-dob').value).toLocaleDateString('en-GB'):'');
+  renderPregnanciesInPatient();
+  toast('Patient file saved ✓');
+  updateDashboard();renderPatients();
+}
+
+// ===== LOAD PATIENT =====
+function loadPatientFile(id){
+  var list=dbGet('patients'),p=null;
+  for(var i=0;i<list.length;i++){if(list[i]['pt-id']===id){p=list[i];break;}}
+  if(!p)return;
+  resetPatientForm();
+  currentPatientId=id;
+  document.getElementById('pt-id').value=id;
+  for(var key in p){
+    var el=document.getElementById(key);
+    if(!el||key==='pt-id')continue;
+    if(el.type==='checkbox')el.checked=p[key];
+    else el.value=p[key]||'';
+  }
+  if(p['pt-us-imgs']){
+    var c=document.getElementById('pt-us-imgs');
+    if(c){c.innerHTML='';p['pt-us-imgs'].forEach(function(src){appendImg(src,c);});}
+  }
+  var ln=p['pt-lastname']||'',fn=p['pt-firstname']||'';
+  document.getElementById('pt-header-name').textContent=ln+' '+fn;
+  document.getElementById('pt-header-sub').textContent=(p['pt-filenum']||'')+(p['pt-dob']?' • DOB: '+new Date(p['pt-dob']).toLocaleDateString('en-GB'):'');
+  renderPregnanciesInPatient();
+  navigateTo('patient-file',ln+' '+fn);
+}
+
+// ===== PREGNANCIES IN PATIENT TAB =====
+function renderPregnanciesInPatient(){
+  var pid=document.getElementById('pt-id').value;
+  if(!pid)return;
+  var pregs=dbGet('pregnancies').filter(function(p){return p['preg-patient-id']===pid;});
+  var container=document.getElementById('pregnancies-list');
+  if(!container)return;
+  if(!pregs.length){
+    container.innerHTML='<div style="padding:16px 0;color:var(--g400);font-size:14px;text-align:center">No pregnancies yet. Tap the button below to open a new pregnancy file.</div>';
+    return;
+  }
+  container.innerHTML=pregs.map(function(pr,idx){
+    var ga=pr['preg-ga']||'GA not calculated';
+    var edd=pr['preg-edd']||'';
+    var lmp=pr['preg-lmp']||'';
+    var mode=pr['preg-delivery-mode']||'';
+    var isCompleted=mode&&mode!=='Pending';
+    return '<div class="preg-card" onclick="loadPregnancyFile(\''+pr['preg-id']+'\')">'
+      +'<div class="preg-title">Pregnancy '+(idx+1)+(lmp?' — LMP: '+new Date(lmp).toLocaleDateString('en-GB'):'')+' </div>'
+      +'<div class="preg-ga">'+(isCompleted?mode:ga)+'</div>'
+      +'<div class="preg-edd">'+(isCompleted?'Delivered':'EDD: '+edd)+'</div>'
+      +'<span class="preg-badge">'+(isCompleted?'Completed':'Active')+'</span>'
+      +'<span class="preg-num">#'+(idx+1)+'</span>'
+      +'</div>';
+  }).join('');
+}
+
+// ===== ADD PREGNANCY =====
+function addPregnancy(){
+  var pid=document.getElementById('pt-id').value;
+  if(!pid){alert('Please save the patient file first.');return;}
+  currentPregId=null;
+  resetPregForm();
+  // Auto-fill patient name in header
+  var ln=document.getElementById('pt-lastname').value||'';
+  var fn=document.getElementById('pt-firstname').value||'';
+  document.getElementById('preg-patient-id').value=pid;
+  document.getElementById('preg-header-name').textContent=ln+' '+fn;
+  // Count existing pregnancies
+  var pregs=dbGet('pregnancies').filter(function(p){return p['preg-patient-id']===pid;});
+  document.getElementById('preg-num').value='Pregnancy #'+(pregs.length+1);
+  document.getElementById('preg-gravida').value=(parseInt(document.getElementById('pt-gravida').value)||0)+1;
+  document.getElementById('preg-para').value=document.getElementById('pt-para').value||0;
+  navigateTo('preg-file',ln+' '+fn+' — New Pregnancy');
+}
+
+function resetPregForm(){
+  var form=document.getElementById('page-preg-file');
+  form.querySelectorAll('input').forEach(function(el){if(el.type==='checkbox')el.checked=false;else el.value='';});
+  form.querySelectorAll('select').forEach(function(el){el.selectedIndex=0;});
+  form.querySelectorAll('textarea').forEach(function(el){el.value='';});
+  document.getElementById('preg-id').value='';
+  ['preg-us1-imgs','preg-us2-imgs','preg-us3-imgs'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='';});
+  var fu=document.getElementById('preg-fu-list');
+  if(fu)fu.innerHTML='';
+  document.getElementById('preg-header-ga').textContent='';
+  switchTabById('preg','ob');
+}
+
+// ===== COLLECT PREGNANCY DATA =====
+function collectPregData(){
+  var data={_updated:new Date().toISOString()};
+  var form=document.getElementById('page-preg-file');
+  form.querySelectorAll('input[id],select[id],textarea[id]').forEach(function(el){
+    if(el.id==='preg-id'||el.id==='preg-patient-id')return;
+    if(el.type==='checkbox')data[el.id]=el.checked;
+    else data[el.id]=el.value;
+  });
+  ['preg-us1-imgs','preg-us2-imgs','preg-us3-imgs'].forEach(function(cid){
+    var c=document.getElementById(cid);
+    if(!c)return;
+    data[cid]=Array.from(c.querySelectorAll('img')).map(function(i){return i.src;});
+  });
+  return data;
+}
+
+// ===== SAVE PREGNANCY =====
+function savePregnancy(){
+  var pid=document.getElementById('preg-patient-id').value;
+  if(!pid)return;
+  var data=collectPregData();
+  data['preg-patient-id']=pid;
+  var list=dbGet('pregnancies');
+  var eid=document.getElementById('preg-id').value;
+  if(eid){
+    currentPregId=eid;
+    for(var i=0;i<list.length;i++){if(list[i]['preg-id']===eid){data['preg-id']=eid;list[i]=data;break;}}
+  } else {
+    data['preg-id']=''+Date.now();
+    document.getElementById('preg-id').value=data['preg-id'];
+    currentPregId=data['preg-id'];
+    list.push(data);
+  }
+  dbSet('pregnancies',list);
+  toast('Pregnancy file saved ✓');
+  updateDashboard();
+}
+
+// ===== LOAD PREGNANCY =====
+function loadPregnancyFile(id){
+  var list=dbGet('pregnancies'),pr=null;
+  for(var i=0;i<list.length;i++){if(list[i]['preg-id']===id){pr=list[i];break;}}
+  if(!pr)return;
+  resetPregForm();
+  currentPregId=id;
+  document.getElementById('preg-id').value=id;
+  document.getElementById('preg-patient-id').value=pr['preg-patient-id']||'';
+  for(var key in pr){
+    var el=document.getElementById(key);
+    if(!el||key==='preg-id'||key==='preg-patient-id')continue;
+    if(el.type==='checkbox')el.checked=pr[key];
+    else el.value=pr[key]||'';
+  }
+  ['preg-us1-imgs','preg-us2-imgs','preg-us3-imgs'].forEach(function(cid){
+    var c=document.getElementById(cid);
+    if(!c||!pr[cid])return;
+    pr[cid].forEach(function(src){appendImg(src,c);});
+  });
+  // Get patient name
+  var pid=pr['preg-patient-id'];
+  var pts=dbGet('patients');
+  var pt=null;
+  for(var j=0;j<pts.length;j++){if(pts[j]['pt-id']===pid){pt=pts[j];break;}}
+  var nm=pt?(pt['pt-lastname']||'')+' '+(pt['pt-firstname']||''):'Patient';
+  document.getElementById('preg-header-name').textContent=nm;
+  document.getElementById('preg-header-ga').textContent=pr['preg-ga']?'GA: '+pr['preg-ga']+(pr['preg-edd']?' | EDD: '+pr['preg-edd']:''):'';
+  navigateTo('preg-file',nm+' — Pregnancy');
+}
+
+// ===== RENDER PATIENTS =====
+function renderPatients(){
+  var q=(document.getElementById('pt-search')?document.getElementById('pt-search').value:'').toLowerCase();
+  var filter=document.getElementById('pt-filter')?document.getElementById('pt-filter').value:'all';
+  var list=document.getElementById('patient-list');
+  if(!list)return;
+  var patients=dbGet('patients');
+  var pregnancies=dbGet('pregnancies');
+  // Build map: patientId -> active pregnancies
+  var pregMap={};
+  pregnancies.forEach(function(pr){
+    var pid=pr['preg-patient-id'];
+    if(!pregMap[pid])pregMap[pid]=[];
+    if(!pr['preg-delivery-mode']||pr['preg-delivery-mode']==='Pending'||pr['preg-delivery-mode']==='')pregMap[pid].push(pr);
+  });
+  var results=patients.filter(function(p){
+    var txt=((p['pt-lastname']||'')+' '+(p['pt-firstname']||'')+' '+(p['pt-filenum']||'')+' '+(p['pt-diagnosis']||'')+' '+(p['pt-complaint']||'')).toLowerCase();
+    if(q&&txt.indexOf(q)<0)return false;
+    if(filter==='pregnant')return pregMap[p['pt-id']]&&pregMap[p['pt-id']].length>0;
+    return true;
+  });
+  if(!results.length){
+    list.innerHTML='<div style="padding:40px 16px;text-align:center;color:var(--g400)">No patients found.<br><br><button onclick="newPatient()" style="background:var(--rose);color:white;border:none;padding:12px 24px;border-radius:12px;font-size:16px;font-weight:600">+ Create First Patient</button></div>';
+    return;
+  }
+  list.innerHTML=results.map(function(p){
+    var ln=p['pt-lastname']||'',fn=p['pt-firstname']||'';
+    var filenum=p['pt-filenum']||'—';
+    var initials=(ln.charAt(0)+fn.charAt(0)).toUpperCase()||'?';
+    var activePregs=pregMap[p['pt-id']]||[];
+    var badge='';
+    var detail=filenum;
+    if(activePregs.length>0){
+      var ga=activePregs[activePregs.length-1]['preg-ga']||'';
+      badge='<span class="pt-badge badge-ob">🤰 '+activePregs.length+' Active</span>';
+      if(ga)detail+=' • GA: '+ga;
+    } else {
+      badge='<span class="pt-badge badge-gyn">GYN</span>';
+    }
+    var id=p['pt-id'];
+    return '<div class="pt-item" onclick="loadPatientFile(\''+id+'\')">'
+      +'<div class="pt-avatar">'+initials+'</div>'
+      +'<div class="pt-info"><div class="pt-name">'+ln+' '+fn+'</div><div class="pt-detail">'+detail+'</div></div>'
+      +badge
+      +'<span class="chevron">›</span>'
+      +'</div>';
+  }).join('');
+}
+
+// ===== APPOINTMENTS =====
+function saveAppt(){
+  var ln=document.getElementById('m-lastname').value;
+  var dt=document.getElementById('m-date').value;
+  if(!ln||!dt){alert('Please fill name and date.');return;}
+  var appt={id:''+Date.now(),lastname:ln,firstname:document.getElementById('m-firstname').value,date:dt,time:document.getElementById('m-time').value,type:document.getElementById('m-type').value,phone:document.getElementById('m-phone').value};
+  var list=dbGet('appointments');list.push(appt);dbSet('appointments',list);
+  closeSheet('appt');loadAppts();updateDashboard();toast('Appointment saved ✓');
+  ['m-lastname','m-firstname','m-phone'].forEach(function(id){document.getElementById(id).value='';});
+}
+
+function loadAppts(){
+  var dp=document.getElementById('appt-dp');
+  var date=dp?dp.value:new Date().toISOString().substr(0,10);
+  var all=dbGet('appointments');
+  var todays=all.filter(function(a){return a.date===date;}).sort(function(a,b){return a.time>b.time?1:-1;});
+  var body=document.getElementById('appt-list-body');
+  if(body)body.innerHTML=!todays.length?'<div style="padding:16px;color:var(--g400);font-size:14px">No appointments.</div>':
+    todays.map(function(a){return '<div class="appt-item"><div class="appt-time">'+a.time+'</div><div class="appt-info"><div class="appt-name">'+a.lastname+' '+a.firstname+'</div><div class="appt-type">'+a.type+'</div></div><button style="background:none;border:1px solid var(--g300);padding:6px 12px;border-radius:8px;font-size:12px" onclick="delAppt(\''+a.id+'\')">✕</button></div>';}).join('');
+  var now=new Date();now.setHours(0,0,0,0);
+  var next7=new Date(now.getTime()+7*24*60*60*1000);
+  var upcoming=all.filter(function(a){var d=new Date(a.date);return d>=now&&d<=next7;}).sort(function(a,b){return(a.date+a.time)>(b.date+b.time)?1:-1;});
+  var upEl=document.getElementById('appt-upcoming');
+  if(upEl)upEl.innerHTML=!upcoming.length?'<div style="padding:16px;color:var(--g400);font-size:14px">No upcoming appointments.</div>':
+    upcoming.map(function(a){var d=new Date(a.date);return '<div class="appt-item"><div class="appt-time" style="font-size:11px;line-height:1.5">'+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'<br>'+a.time+'</div><div class="appt-info"><div class="appt-name">'+a.lastname+' '+a.firstname+'</div><div class="appt-type">'+a.type+'</div></div></div>';}).join('');
+}
+
+function delAppt(id){dbSet('appointments',dbGet('appointments').filter(function(a){return a.id!==id;}));loadAppts();updateDashboard();}
+
+// ===== FOLLOW-UP VISITS =====
+function addFU(type){
+  fuCount++;
+  var n=fuCount;
+  var containerId=type==='preg'?'preg-fu-list':'gyn-fu-list';
+  var c=document.getElementById(containerId);
+  if(!c)return;
+  var div=document.createElement('div');
+  div.className='fu-card';
+  div.innerHTML='<div class="fu-card-hdr"><span style="font-size:15px;font-weight:600;color:white">Visit #'+n+'</span><button class="fu-remove-btn" onclick="this.closest(\'.fu-card\').remove()">Remove</button></div>'
+    +'<div style="padding:0 0 8px">'
+    +(type==='preg'?'<div class="form-field"><label>GA at Visit</label><input id="fu-ga-'+n+'" placeholder="e.g. 28w0d"></div>':'')
+    +'<div class="form-field"><label>Date</label><input type="date" id="fu-date-'+n+'"></div>'
+    +'<div class="form-field"><label>Weight (kg)</label><input type="number" id="fu-wt-'+n+'" step="0.1"></div>'
+    +'<div class="form-field"><label>BP (mmHg)</label><input id="fu-bp-'+n+'" placeholder="120/80"></div>'
+    +(type==='preg'?'<div class="form-field"><label>FHR / Fetal Movements</label><input id="fu-fhr-'+n+'"></div><div class="form-field"><label>Fundal Height (cm)</label><input type="number" id="fu-fh-'+n+'"></div>':'')
+    +'<div class="form-field"><label>Lab Tests</label><textarea id="fu-labs-'+n+'" placeholder="CBC, glucose, urine..."></textarea></div>'
+    +(type==='preg'?'<div class="form-field"><label>Ultrasound Summary</label><textarea id="fu-us-'+n+'"></textarea></div>':'')
+    +'<div class="form-field"><label>Prescription and Plan</label><textarea id="fu-rx-'+n+'"></textarea></div>'
+    +'<div class="form-field"><label>Next Visit</label><input type="date" id="fu-next-'+n+'"></div>'
+    +'</div>';
+  c.appendChild(div);
+}
+
+// ===== IMAGES =====
+function addImgs(input,cid){
+  var c=document.getElementById(cid);
+  Array.from(input.files).forEach(function(file){
+    var r=new FileReader();
+    r.onload=function(e){appendImg(e.target.result,c);};
+    r.readAsDataURL(file);
+  });
+}
+function appendImg(src,c){
+  var img=document.createElement('img');
+  img.src=src;img.className='img-thumb';
+  img.onclick=function(){window.open(this.src,'_blank');};
+  c.appendChild(img);
+}
+
+// ===== DASHBOARD =====
+function updateDashboard(){
+  var patients=dbGet('patients');
+  var pregs=dbGet('pregnancies');
+  var appts=dbGet('appointments');
+  var today=new Date().toISOString().substr(0,10);
+  var tc=appts.filter(function(a){return a.date===today;}).length;
+  var activePregs=pregs.filter(function(p){return!p['preg-delivery-mode']||p['preg-delivery-mode']==='Pending'||p['preg-delivery-mode']==='';}).length;
+  var gynOnly=patients.filter(function(p){var pp=pregs.filter(function(pr){return pr['preg-patient-id']===p['pt-id'];});return pp.length===0;}).length;
+  document.getElementById('s-total').textContent=patients.length;
+  document.getElementById('s-ob').textContent=activePregs;
+  document.getElementById('s-today').textContent=tc;
+  document.getElementById('s-gyn').textContent=gynOnly;
+  var ta=appts.filter(function(a){return a.date===today;});
+  document.getElementById('dash-appts').innerHTML=!ta.length?'<div style="padding:16px;color:var(--g400);font-size:14px">No appointments today.</div>':
+    ta.map(function(a){return '<div class="appt-item"><div class="appt-time">'+a.time+'</div><div class="appt-info"><div class="appt-name">'+a.lastname+' '+a.firstname+'</div><div class="appt-type">'+a.type+'</div></div></div>';}).join('');
+  var rec=patients.slice(-5).reverse();
+  document.getElementById('dash-recent').innerHTML=!rec.length?'<div style="padding:16px;color:var(--g400);font-size:14px">No recent files.</div>':
+    rec.map(function(p){
+      var ln=p['pt-lastname']||'',fn=p['pt-firstname']||'';
+      var pp=pregs.filter(function(pr){return pr['preg-patient-id']===p['pt-id']&&(!pr['preg-delivery-mode']||pr['preg-delivery-mode']==='Pending'||pr['preg-delivery-mode']==='');});
+      var badge=pp.length>0?'<span class="pt-badge badge-ob">🤰 Pregnant</span>':'<span class="pt-badge badge-gyn">GYN</span>';
+      return '<div class="pt-item" onclick="loadPatientFile(\''+p['pt-id']+'\')"><div class="pt-avatar" style="width:36px;height:36px;font-size:13px">'+(ln.charAt(0)+fn.charAt(0)).toUpperCase()+'</div><div class="pt-info"><div class="pt-name" style="font-size:14px">'+ln+' '+fn+'</div><div class="pt-detail">'+p['pt-filenum']+'</div></div>'+badge+'</div>';
+    }).join('');
+}
+
+// ===== SETTINGS =====
+function loadSettings(){
+  var s=dbGetObj('settings');
+  ['set-doctor','set-clinic','set-phone'].forEach(function(id){var el=document.getElementById(id);if(el&&s[id])el.value=s[id];});
+}
+function saveSettings(){
+  var s={};
+  ['set-doctor','set-clinic','set-phone'].forEach(function(id){var el=document.getElementById(id);if(el)s[id]=el.value;});
+  dbSet('settings',s);toast('Settings saved ✓');
+}
+
+// ===== EXPORT / IMPORT =====
+function exportData(){
+  var data={exported:new Date().toISOString(),patients:dbGet('patients'),pregnancies:dbGet('pregnancies'),appointments:dbGet('appointments'),settings:dbGetObj('settings')};
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='GyneCare-Backup-'+new Date().toISOString().substr(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('Exported! AirDrop to your laptop.');
+}
+function importData(input){
+  var file=input.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      if(data.patients)dbSet('patients',data.patients);
+      if(data.pregnancies)dbSet('pregnancies',data.pregnancies);
+      if(data.appointments)dbSet('appointments',data.appointments);
+      if(data.settings)dbSet('settings',data.settings);
+      // Legacy support for old format
+      if(data['ob-patients']){
+        var old=data['ob-patients'];
+        var existing=dbGet('patients');
+        old.forEach(function(op){
+          var newPt={_updated:new Date().toISOString(),'pt-id':'legacy-'+op['ob-id'],'pt-filenum':op['ob-filenum']||'','pt-lastname':op['ob-lastname']||'','pt-firstname':op['ob-firstname']||'','pt-dob':op['ob-dob']||'','pt-phone':op['ob-phone']||'','pt-email':op['ob-email']||''};
+          existing.push(newPt);
+        });
+        dbSet('patients',existing);
+      }
+      if(data['gyn-patients']){
+        var oldg=data['gyn-patients'];
+        var existingg=dbGet('patients');
+        oldg.forEach(function(gp){
+          var newPtg={_updated:new Date().toISOString(),'pt-id':'legacy-g-'+gp['gyn-id'],'pt-filenum':gp['gyn-filenum']||'','pt-lastname':gp['gyn-lastname']||'','pt-firstname':gp['gyn-firstname']||''};
+          existingg.push(newPtg);
+        });
+        dbSet('patients',existingg);
+      }
+      updateDashboard();renderPatients();toast('Data imported successfully ✓');
+    }catch(e){alert('Invalid file.');}
+  };
+  r.readAsText(file);
+}
+
+// ===== TOAST =====
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  setTimeout(function(){t.style.display='none';},3000);
+}
+
+// =============================================
+// OCR ENGINE — AI-POWERED DOCUMENT SCANNING
+// =============================================
+var ocrContext = null;   // which section triggered OCR
+var ocrType = 'auto';    // report type selected
+var ocrExtracted = [];   // fields extracted by AI
+var ocrPhotoData = null; // base64 of current photo
+
+// Field definitions for each report type
+var OCR_FIELDS = {
+  'ob-blood': [
+    {id:'preg-hb',      label:'Haemoglobin (Hb g/dL)',      hint:'hb|hemoglobin|haemoglobin'},
+    {id:'preg-plt',     label:'Platelets (/µL)',              hint:'platelets|plt|thrombocytes'},
+    {id:'preg-wbc',     label:'WBC (/µL)',                    hint:'wbc|white blood|leucocytes|leukocytes'},
+    {id:'preg-bt-bg',   label:'Blood Group & Rh',             hint:'blood group|blood type|groupe sanguin|rhesus|rh'},
+    {id:'preg-toxo-igg',label:'Toxo IgG',                    hint:'toxoplasma|toxo.*igg|igg.*toxo'},
+    {id:'preg-toxo-igm',label:'Toxo IgM',                    hint:'toxoplasma|toxo.*igm|igm.*toxo'},
+    {id:'preg-rubella-igg',label:'Rubella IgG',              hint:'rubella|rubeole.*igg|igg.*rubeole'},
+    {id:'preg-rubella-igm',label:'Rubella IgM',              hint:'rubella|rubeole.*igm'},
+    {id:'preg-cmv-igg', label:'CMV IgG',                     hint:'cmv|cytomegalo.*igg'},
+    {id:'preg-cmv-igm', label:'CMV IgM',                     hint:'cmv|cytomegalo.*igm'},
+    {id:'preg-hiv',     label:'HIV',                          hint:'hiv|vih|human immunodeficiency'},
+    {id:'preg-vdrl',    label:'VDRL / Syphilis',             hint:'vdrl|syphilis|tpha|tppa|rpr'},
+    {id:'preg-hbs',     label:'HBs Ag (Hepatitis B)',        hint:'hbs|hepatite b|hepatitis b surface'},
+    {id:'preg-hcv',     label:'HCV Ab',                       hint:'hcv|hepatite c|hepatitis c'},
+    {id:'preg-tsh',     label:'TSH (mIU/L)',                  hint:'tsh|thyroid stimulating'},
+    {id:'preg-glucose', label:'Fasting Glucose (mg/dL)',      hint:'glucose|glycemie|blood sugar|fasting'},
+    {id:'preg-ogtt1',   label:'OGTT 1h (mg/dL)',             hint:'ogtt.*1h|1.*hour.*glucose|hgpo.*1h'},
+    {id:'preg-ogtt2',   label:'OGTT 2h (mg/dL)',             hint:'ogtt.*2h|2.*hour.*glucose|hgpo.*2h'},
+    {id:'preg-hb2',     label:'2nd Tri Hb (g/dL)',           hint:'hb|haemoglobin'},
+    {id:'preg-ferritin',label:'Ferritin (ng/mL)',             hint:'ferritin|ferritine'},
+    {id:'preg-gbs',     label:'GBS (Group B Strep)',          hint:'gbs|group b strep|streptocoque b'},
+    {id:'preg-inr',     label:'INR',                          hint:'inr|international normalized'}
+  ],
+  'gyn-labs': [
+    {id:'pt-fsh',    label:'FSH (mIU/mL)',        hint:'fsh|follicle stimulating'},
+    {id:'pt-lh',     label:'LH (mIU/mL)',         hint:'lh|luteinizing|luteinisant'},
+    {id:'pt-e2',     label:'Estradiol (pg/mL)',   hint:'estradiol|e2|oestradiol'},
+    {id:'pt-prog',   label:'Progesterone (ng/mL)',hint:'progesterone'},
+    {id:'pt-prl',    label:'Prolactin (ng/mL)',   hint:'prolactin|prolactine|prl'},
+    {id:'pt-tsh',    label:'TSH (mIU/L)',          hint:'tsh|thyroid stimulating'},
+    {id:'pt-amh',    label:'AMH (ng/mL)',          hint:'amh|anti.mullerian|antimullerian'},
+    {id:'pt-testo',  label:'Testosterone (ng/dL)', hint:'testosterone|testostérone'},
+    {id:'pt-ca125',  label:'CA-125 (U/mL)',        hint:'ca.?125|ca125'},
+    {id:'pt-he4',    label:'HE4 (pmol/L)',         hint:'he4|human epididymis'},
+    {id:'pt-ca199',  label:'CA 19-9 (U/mL)',       hint:'ca.?19.?9|ca199'},
+    {id:'pt-afp',    label:'AFP (ng/mL)',           hint:'afp|alpha.feto'},
+    {id:'pt-hb',     label:'Hb (g/dL)',             hint:'hb|hemoglobin|haemoglobin'},
+    {id:'pt-glucose',label:'Fasting Glucose',       hint:'glucose|glycemie|fasting'},
+    {id:'pt-chol',   label:'Cholesterol (mg/dL)',   hint:'cholesterol|cholesterol total'},
+    {id:'pt-hba1c',  label:'HbA1c (%)',             hint:'hba1c|glycated|glycosylated|hemoglobine glycquee'}
+  ],
+  'gyn-us': [
+    {id:'pt-ut-size',     label:'Uterus Size (cm)',         hint:'uterus.*size|taille.*uterus|dimensions.*uterus|uterine.*dimension'},
+    {id:'pt-endo-thick',  label:'Endometrial Thickness mm', hint:'endometri|endometre|endometrium.*thickness|epaisseur'},
+    {id:'pt-rov-size',    label:'Right Ovary Size (cm)',    hint:'right.*ovar|ovaire.*droit|OD'},
+    {id:'pt-rov-find',    label:'Right Ovary Findings',     hint:'right.*ovar.*finding|ovaire.*droit'},
+    {id:'pt-lov-size',    label:'Left Ovary Size (cm)',     hint:'left.*ovar|ovaire.*gauche|OG'},
+    {id:'pt-lov-find',    label:'Left Ovary Findings',      hint:'left.*ovar.*finding|ovaire.*gauche'},
+    {id:'pt-free-fluid',  label:'Free Fluid',               hint:'free fluid|epanchement|douglas|cul.de.sac'},
+    {id:'pt-us-conclusion',label:'Conclusion',              hint:'conclusion|impression|summary|bilan'}
+  ],
+  'ob-us1': [
+    {id:'preg-us1-ga',   label:'GA at Scan',     hint:'gestational age|age gestationnel|ag|sa'},
+    {id:'preg-crl',      label:'CRL (mm)',        hint:'crl|crown.rump|longueur.*cranio|lcr'},
+    {id:'preg-nt',       label:'NT (mm)',         hint:'nt|nuchal translucency|clarté nuchale|cn'},
+    {id:'preg-nb',       label:'Nasal Bone',      hint:'nasal bone|os nasal|on'},
+    {id:'preg-fhr1',     label:'FHR (bpm)',       hint:'fhr|heart rate|rythme cardiaque|bpm|fc'},
+    {id:'preg-us1-findings',label:'Findings',    hint:'findings|conclusion|impression|bilan'}
+  ],
+  'ob-us2': [
+    {id:'preg-us2-ga',   label:'GA at Scan',          hint:'gestational age|sa|ag'},
+    {id:'preg-bpd',      label:'BPD (mm)',             hint:'bpd|bi.parietal|biparietal|dbp'},
+    {id:'preg-hc',       label:'HC (mm)',              hint:'hc|head circumference|pc|perimetre cranien'},
+    {id:'preg-ac',       label:'AC (mm)',              hint:'ac|abdominal circumference|pa|perimetre abdominal'},
+    {id:'preg-fl',       label:'FL (mm)',              hint:'fl|femur length|longueur femorale|lf'},
+    {id:'preg-efw',      label:'EFW (g)',              hint:'efw|estimated.*weight|poids.*estime|pfe'},
+    {id:'preg-placenta', label:'Placenta Location',    hint:'placenta.*location|placenta.*anterior|placenta.*posterior|localisation'},
+    {id:'preg-afi',      label:'AFI (cm)',             hint:'afi|amniotic fluid|liquide amniotique|la'},
+    {id:'preg-fhr2',     label:'FHR (bpm)',            hint:'fhr|heart rate|bpm|fc'},
+    {id:'preg-cx-length',label:'Cervical Length (mm)', hint:'cervical length|col.*longueur|longueur.*col|lc'},
+    {id:'preg-anatomy',  label:'Fetal Anatomy',        hint:'anatomy|anatomie|morphologie|structures'},
+    {id:'preg-doppler',  label:'Doppler Findings',     hint:'doppler|umbilical|artere'}
+  ],
+  'ob-us3': [
+    {id:'preg-us3-ga',       label:'GA at Scan',          hint:'gestational age|sa|ag'},
+    {id:'preg-bpd3',         label:'BPD (mm)',             hint:'bpd|bi.parietal|dbp'},
+    {id:'preg-hc3',          label:'HC (mm)',              hint:'hc|head circumference|pc'},
+    {id:'preg-ac3',          label:'AC (mm)',              hint:'ac|abdominal circumference|pa'},
+    {id:'preg-fl3',          label:'FL (mm)',              hint:'fl|femur length|lf'},
+    {id:'preg-efw3',         label:'EFW (g)',              hint:'efw|estimated.*weight|poids.*estime|pfe'},
+    {id:'preg-afi3',         label:'AFI (cm)',             hint:'afi|amniotic fluid|liquide|la'},
+    {id:'preg-presentation', label:'Presentation',         hint:'presentation|presentacion|cephalic|breech|siege|cephalique'},
+    {id:'preg-placenta-grade',label:'Placenta Grade',      hint:'placenta.*grade|grade.*placenta|maturite'},
+    {id:'preg-us3-findings', label:'Findings',             hint:'findings|conclusion|impression|bilan'},
+    {id:'preg-doppler3',     label:'Doppler',              hint:'doppler|umbilical|artere'}
+  ]
+};
+
+// Map auto-detect context to field set
+var CONTEXT_MAP = {
+  'ob-blood':'ob-blood', 'gyn-labs':'gyn-labs',
+  'gyn-us':'gyn-us', 'ob-us1':'ob-us1',
+  'ob-us2':'ob-us2', 'ob-us3':'ob-us3'
+};
+
+function openOCR(context){
+  ocrContext=context; ocrType='auto'; ocrExtracted=[];
+  ocrPhotoData=null;
+  // Reset UI
+  document.getElementById('ocr-overlay').classList.add('show');
+  document.getElementById('ocr-preview').style.display='none';
+  document.getElementById('ocr-status').style.display='none';
+  document.getElementById('ocr-results').style.display='none';
+  document.getElementById('ocr-import-btn').style.display='none';
+  document.getElementById('ocr-photo-saved').style.display='none';
+  document.getElementById('ocr-fields-list').innerHTML='';
+  document.getElementById('ocr-photo-area').style.display='block';
+  document.getElementById('ocr-file-input').value='';
+  // Set title
+  var titles={'ob-blood':'Scan Blood Test Report','gyn-labs':'Scan Lab / Hormonal Report','gyn-us':'Scan GYN Ultrasound Report','ob-us1':'Scan T1 Ultrasound Report','ob-us2':'Scan T2 Anatomy Scan Report','ob-us3':'Scan T3 Growth Scan Report'};
+  document.getElementById('ocr-title').textContent=titles[context]||'Scan Report';
+  // Set active type button
+  var mapped=CONTEXT_MAP[context]||'auto';
+  document.querySelectorAll('.ocr-type-btn').forEach(function(b){b.classList.remove('active');if(b.getAttribute('data-type')===mapped||mapped===b.getAttribute('data-type'))b.classList.add('active');});
+  if(mapped!=='auto')ocrType=mapped;
+  // Show saved photos
+  loadSavedPhotos(context);
+  // Reset scroll
+  document.getElementById('ocr-overlay').querySelector('.ocr-body').scrollTop=0;
+}
+
+function closeOCR(){
+  document.getElementById('ocr-overlay').classList.remove('show');
+  document.getElementById('ocr-file-input').value='';
+}
+
+function setOCRType(type,btn){
+  ocrType=type;
+  document.querySelectorAll('.ocr-type-btn').forEach(function(b){b.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+}
+
+function handleOCRPhoto(input){
+  var file=input.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    ocrPhotoData=e.target.result;
+    // Show preview
+    var prev=document.getElementById('ocr-preview');
+    prev.src=ocrPhotoData; prev.style.display='block';
+    document.getElementById('ocr-photo-area').style.display='none';
+    // Save photo to patient file immediately
+    savePhotoToPatientFile(ocrPhotoData, ocrContext);
+    document.getElementById('ocr-photo-saved').style.display='block';
+    // Start AI analysis
+    runOCR(ocrPhotoData);
+  };
+  reader.readAsDataURL(file);
+}
+
+function savePhotoToPatientFile(dataUrl, context){
+  // Determine if we're in patient or pregnancy file
+  var ptId=document.getElementById('pt-id')?document.getElementById('pt-id').value:'';
+  var pregId=document.getElementById('preg-id')?document.getElementById('preg-id').value:'';
+  var photo={src:dataUrl,context:context,date:new Date().toISOString(),label:context};
+  if(pregId){
+    var pregs=dbGet('pregnancies');
+    for(var i=0;i<pregs.length;i++){
+      if(pregs[i]['preg-id']===pregId){
+        if(!pregs[i]['_doc-photos'])pregs[i]['_doc-photos']=[];
+        pregs[i]['_doc-photos'].push(photo);
+        break;
+      }
+    }
+    dbSet('pregnancies',pregs);
+  } else if(ptId){
+    var patients=dbGet('patients');
+    for(var i=0;i<patients.length;i++){
+      if(patients[i]['pt-id']===ptId){
+        if(!patients[i]['_doc-photos'])patients[i]['_doc-photos']=[];
+        patients[i]['_doc-photos'].push(photo);
+        break;
+      }
+    }
+    dbSet('patients',patients);
+  }
+  loadSavedPhotos(context);
+}
+
+function loadSavedPhotos(context){
+  var ptId=document.getElementById('pt-id')?document.getElementById('pt-id').value:'';
+  var pregId=document.getElementById('preg-id')?document.getElementById('preg-id').value:'';
+  var photos=[];
+  if(pregId){
+    var pregs=dbGet('pregnancies');
+    for(var i=0;i<pregs.length;i++){if(pregs[i]['preg-id']===pregId&&pregs[i]['_doc-photos']){photos=pregs[i]['_doc-photos'];break;}}
+  } else if(ptId){
+    var patients=dbGet('patients');
+    for(var i=0;i<patients.length;i++){if(patients[i]['pt-id']===ptId&&patients[i]['_doc-photos']){photos=patients[i]['_doc-photos'];break;}}
+  }
+  var filtered=photos.filter(function(p){return p.context===context;});
+  var section=document.getElementById('ocr-saved-photos-section');
+  var grid=document.getElementById('ocr-saved-photos-grid');
+  if(!filtered.length){section.style.display='none';return;}
+  section.style.display='block';
+  grid.innerHTML=filtered.map(function(p,idx){
+    var d=new Date(p.date);
+    var label=d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    return '<div style="position:relative"><img src="'+p.src+'" class="photo-thumb" onclick="window.open(this.src,\'_blank\')" title="'+label+'"><div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:white;font-size:9px;padding:2px 4px;border-radius:0 0 8px 8px">'+label+'</div></div>';
+  }).join('');
+}
+
+// ===== CLAUDE AI OCR =====
+function runOCR(imageDataUrl){
+  // Show status
+  var statusEl=document.getElementById('ocr-status');
+  statusEl.style.display='block';
+  document.getElementById('ocr-status-icon').textContent='⏳';
+  document.getElementById('ocr-status-text').textContent='AI is reading your document...';
+  document.getElementById('ocr-status-body').textContent='Claude AI is analysing the image and extracting all test values. This takes 5-10 seconds.';
+
+  // Determine actual field set to use
+  var fieldSet=ocrType!=='auto'?ocrType:(CONTEXT_MAP[ocrContext]||'gyn-labs');
+  // Map type-bar values to field keys
+  var typeMap={'blood':'ob-blood','hormones':'gyn-labs','us-gyn':'gyn-us','us-ob':'ob-us2','markers':'gyn-labs'};
+  if(typeMap[fieldSet])fieldSet=typeMap[fieldSet];
+  var fields=OCR_FIELDS[fieldSet]||OCR_FIELDS['gyn-labs'];
+
+  // Build field list for the prompt
+  var fieldDesc=fields.map(function(f,i){return (i+1)+'. '+f.label;}).join('\n');
+
+  // Extract base64 from data URL
+  var base64=imageDataUrl.split(',')[1];
+  var mediaType=imageDataUrl.split(';')[0].split(':')[1]||'image/jpeg';
+
+  // Call Claude API
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-6',
+      max_tokens:1000,
+      messages:[{
+        role:'user',
+        content:[
+          {
+            type:'image',
+            source:{type:'base64',media_type:mediaType,data:base64}
+          },
+          {
+            type:'text',
+            text:'You are a medical document reader for a gynecology clinic system. Read this medical document image carefully.\n\nExtract the following values from the document. Return ONLY a valid JSON object, no other text, no markdown, no explanation.\n\nFields to extract:\n'+fieldDesc+'\n\nRules:\n- For each field found, include it in the JSON with the exact field number as key (e.g. "1", "2", etc.)\n- For numeric results, include the value and unit if present (e.g. "12.5 g/dL" or just "12.5")\n- For reactive/non-reactive results, return "Negative" or "Positive" or "Non-reactive" or "Reactive"\n- For blood group: return full string like "A Positive" or "O Negative"\n- For text findings or conclusions: return the full text\n- If a value is not found or not visible in the image, do NOT include that field number in the JSON\n- The document may be in English, French, or Arabic - extract regardless of language\n- Return ONLY the JSON object, starting with { and ending with }'
+          }
+        ]
+      }]
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var text='';
+    if(data.content&&data.content[0]&&data.content[0].text){
+      text=data.content[0].text.trim();
+    }
+    // Parse JSON
+    var start=text.indexOf('{');
+    var end=text.lastIndexOf('}');
+    if(start>=0&&end>start){
+      text=text.substring(start,end+1);
+    }
+    var extracted={};
+    try{extracted=JSON.parse(text);}catch(e){extracted={};}
+    // Map back to field objects
+    ocrExtracted=[];
+    fields.forEach(function(f,i){
+      var key=''+(i+1);
+      var val=extracted[key];
+      if(val!==undefined&&val!==null&&val!==''){
+        ocrExtracted.push({id:f.id,label:f.label,value:''+val,found:true});
+      } else {
+        ocrExtracted.push({id:f.id,label:f.label,value:'',found:false});
+      }
+    });
+    showOCRResults(ocrExtracted,fields.length);
+  })
+  .catch(function(err){
+    document.getElementById('ocr-status-icon').textContent='❌';
+    document.getElementById('ocr-status-text').textContent='Could not read document';
+    document.getElementById('ocr-status-body').textContent='Make sure you have internet connection. You can still manually enter the values below or try a clearer photo.';
+    // Show empty fields for manual entry
+    ocrExtracted=fields.map(function(f){return{id:f.id,label:f.label,value:'',found:false};});
+    showOCRResults(ocrExtracted,0);
+  });
+}
+
+function showOCRResults(results,foundCount){
+  // Update status
+  var statusEl=document.getElementById('ocr-status');
+  if(foundCount>0){
+    document.getElementById('ocr-status-icon').textContent='✅';
+    document.getElementById('ocr-status-text').textContent='Found '+foundCount+' values';
+    document.getElementById('ocr-status-body').textContent='Review the values below. Green fields were found in the document. You can correct any value before importing.';
+  } else {
+    document.getElementById('ocr-status-icon').textContent='⚠️';
+    document.getElementById('ocr-status-text').textContent='No values detected';
+    document.getElementById('ocr-status-body').textContent='The image may be blurry or the document format is different. Try a clearer photo or enter values manually below.';
+  }
+
+  // Build results UI
+  var resultsEl=document.getElementById('ocr-results');
+  resultsEl.style.display='block';
+  var html='';
+  results.forEach(function(r){
+    html+='<div class="ocr-field-row">'
+      +'<div class="ocr-field-label">'+r.label+'</div>'
+      +'<input class="ocr-field-val'+(r.found?' ocr-field-found':'')+'" '
+      +'id="ocr-val-'+r.id+'" value="'+escHtml(r.value)+'" placeholder="'+(r.found?'':'Not found — type manually')+'">'
+      +'</div>';
+  });
+  document.getElementById('ocr-fields-list').innerHTML=html;
+
+  // Show import button
+  document.getElementById('ocr-import-btn').style.display='block';
+
+  // Scroll to results
+  setTimeout(function(){
+    document.getElementById('ocr-results').scrollIntoView({behavior:'smooth',block:'start'});
+  },300);
+}
+
+function importOCRResults(){
+  var imported=0;
+  ocrExtracted.forEach(function(r){
+    var inputEl=document.getElementById('ocr-val-'+r.id);
+    var val=inputEl?inputEl.value.trim():'';
+    if(!val)return;
+    var targetEl=document.getElementById(r.id);
+    if(!targetEl)return;
+    // Try to set the value
+    if(targetEl.tagName==='SELECT'){
+      // Try to match option
+      var matched=false;
+      for(var i=0;i<targetEl.options.length;i++){
+        var opt=targetEl.options[i].text.toLowerCase();
+        var v=val.toLowerCase();
+        if(opt===v||opt.indexOf(v)>=0||v.indexOf(opt)>=0){
+          targetEl.selectedIndex=i; matched=true; break;
+        }
+      }
+      if(!matched&&targetEl.options.length>0){
+        // Add as first option text if no match
+        targetEl.value=targetEl.options[0].value;
+      }
+    } else {
+      // For numeric fields, extract just the number
+      if(targetEl.type==='number'){
+        var num=val.replace(/[^0-9.]/g,'');
+        if(num)targetEl.value=num;
+      } else {
+        targetEl.value=val;
+      }
+    }
+    // Highlight the field briefly
+    targetEl.style.borderColor='var(--teal)';
+    targetEl.style.background='rgba(61,139,139,0.1)';
+    setTimeout(function(el){el.style.borderColor='';el.style.background='';},2000,targetEl);
+    imported++;
+  });
+  toast(imported+' values imported ✓ — Review and correct as needed');
+  closeOCR();
+}
+
+function escHtml(str){
+  return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Auto-save every 60 seconds
+setInterval(function(){
+  var ptActive=document.getElementById('page-patient-file').classList.contains('active');
+  var pregActive=document.getElementById('page-preg-file').classList.contains('active');
+  if(ptActive&&document.getElementById('pt-lastname').value)savePatient();
+  if(pregActive&&document.getElementById('preg-patient-id').value)savePregnancy();
+},60000);
+</script>
+</body>
+</html>
