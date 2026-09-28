@@ -841,13 +841,26 @@ hr{border:none;border-top:1px solid var(--g200);margin:4px 0}
       <button class="ocr-type-btn" data-type="markers" onclick="setOCRType('markers',this)">🧬 Tumor Markers</button>
     </div>
 
-    <!-- Photo area -->
-    <div class="ocr-photo-area" id="ocr-photo-area" onclick="document.getElementById('ocr-file-input').click()">
-      <div class="ocr-ico">📷</div>
-      <p>Take a Photo or Choose from Gallery</p>
-      <small>Works with printed lab results, radiology reports, ultrasound printouts</small>
+    <!-- Photo area — two choices -->
+    <div id="ocr-photo-area">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px">
+        <div class="ocr-photo-area" style="margin-bottom:0" onclick="document.getElementById('ocr-camera-input').click()">
+          <div class="ocr-ico">📷</div>
+          <p style="font-size:14px">Take Photo</p>
+          <small>Use iPhone camera now</small>
+        </div>
+        <div class="ocr-photo-area" style="margin-bottom:0" onclick="document.getElementById('ocr-library-input').click()">
+          <div class="ocr-ico">🖼️</div>
+          <p style="font-size:14px">Photo Library</p>
+          <small>Choose a saved image</small>
+        </div>
+      </div>
+      <p style="color:rgba(255,255,255,0.35);font-size:12px;text-align:center">Works with lab results, radiology reports, ultrasound printouts — in English, French or Arabic</p>
     </div>
-    <input type="file" id="ocr-file-input" accept="image/*" capture="environment" style="display:none" onchange="handleOCRPhoto(this)">
+    <!-- Camera input — opens camera directly -->
+    <input type="file" id="ocr-camera-input" accept="image/*" capture="environment" style="display:none" onchange="handleOCRPhoto(this)">
+    <!-- Library input — opens photo library -->
+    <input type="file" id="ocr-library-input" accept="image/*" style="display:none" onchange="handleOCRPhoto(this)">
 
     <!-- Preview -->
     <img id="ocr-preview" class="ocr-preview">
@@ -987,8 +1000,15 @@ function goBackToPatient(){
 }
 
 // ===== TABS =====
+function resolvePageId(prefix){
+  // Map prefix to actual page element ID
+  if(prefix==='pt')return 'page-patient-file';
+  if(prefix==='preg')return 'page-preg-file';
+  return 'page-'+prefix+'-file';
+}
+
 function switchTab(prefix,tab,btn){
-  var form=document.getElementById('page-'+prefix+'-file');
+  var form=document.getElementById(resolvePageId(prefix));
   if(!form)return;
   form.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
   form.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
@@ -999,14 +1019,17 @@ function switchTab(prefix,tab,btn){
 }
 
 function switchTabById(prefix,tab){
-  var form=document.getElementById('page-'+prefix+'-file');
+  var form=document.getElementById(resolvePageId(prefix));
   if(!form)return;
   form.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
   form.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
   var p=document.getElementById(prefix+'-tab-'+tab);
   if(p)p.classList.add('active');
   var btns=form.querySelectorAll('.tab-btn');
-  btns.forEach(function(b){if(b.getAttribute('onclick')&&b.getAttribute('onclick').indexOf("'"+tab+"'")>=0)b.classList.add('active');});
+  btns.forEach(function(b){
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').indexOf("'"+tab+"'")>=0)
+      b.classList.add('active');
+  });
 }
 
 // ===== SHEETS =====
@@ -1585,7 +1608,8 @@ function openOCR(context){
   document.getElementById('ocr-photo-saved').style.display='none';
   document.getElementById('ocr-fields-list').innerHTML='';
   document.getElementById('ocr-photo-area').style.display='block';
-  document.getElementById('ocr-file-input').value='';
+  document.getElementById('ocr-camera-input').value='';
+  document.getElementById('ocr-library-input').value='';
   // Set title
   var titles={'ob-blood':'Scan Blood Test Report','gyn-labs':'Scan Lab / Hormonal Report','gyn-us':'Scan GYN Ultrasound Report','ob-us1':'Scan T1 Ultrasound Report','ob-us2':'Scan T2 Anatomy Scan Report','ob-us3':'Scan T3 Growth Scan Report'};
   document.getElementById('ocr-title').textContent=titles[context]||'Scan Report';
@@ -1601,7 +1625,8 @@ function openOCR(context){
 
 function closeOCR(){
   document.getElementById('ocr-overlay').classList.remove('show');
-  document.getElementById('ocr-file-input').value='';
+  document.getElementById('ocr-camera-input').value='';
+  document.getElementById('ocr-library-input').value='';
 }
 
 function setOCRType(type,btn){
